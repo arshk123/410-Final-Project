@@ -1,0 +1,3 @@
+[submodule "pitchfork"]
+	path = pitchfork
+	url = https://github.com/tejassharma96/pitchfork.git
