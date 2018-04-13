@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 beautifulsoup4==4.6.0
 click==6.7
 Flask==0.12.2
@@ -7,3 +8,8 @@ lxml==4.2.1
 MarkupSafe==1.0
 musicbrainzngs==0.6
 Werkzeug==0.14.1
+=======
+beautifulsoup4
+lxml
+spotipy
+>>>>>>> baa4fb70fa380ac87d50a97a081f8ea1652d0647
