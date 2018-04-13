@@ -1,68 +1,13 @@
 """Testing things related to getting artist data."""
-import musicbrainzngs as mbz
-import discogs_client as discog
-from api_keys import spotify_client_id, spotify_client_secret, discogs_token
+from api_keys import spotify_client_id, spotify_client_secret
+import pitchfork
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
-mbz.set_useragent('Music Rater', '0.1')
-mbz.set_hostname('beta.musicbrainz.org')
-d = discog.Client('Music Rater/0.1', user_token=discogs_token)
 spotify_credentials_manager = SpotifyClientCredentials(client_id=spotify_client_id,
                                                        client_secret=spotify_client_secret)
 sp = spotipy.Spotify(client_credentials_manager=spotify_credentials_manager)
 
-
-# def get_artist_list(query):
-#     """Search for artists based on a query."""
-#     result = mbz.search_artists(artist=query)
-#     artist_list = result['artist-list']
-#     for i, artist in enumerate(artist_list):
-#         print(i, artist['name'])
-#     return artist_list
-
-
-# def get_artist_id(artist_list, idx):
-#     """Get the id of the artist at index idx in artist_list."""
-#     return artist_list[idx]['id']
-
-
-# def get_albums(artist_id):
-#     """Get the albums from an artist based on their id."""
-#     results = mbz.browse_release_groups(artist=artist_id,
-#                                   release_status=['official'],
-#                                   includes=['labels'],
-#                                   release_type=['album', 'ep'],
-#                                   limit=100)
-#     releases = results['release-group-list']
-#     return releases
-
-# def get_artist_list(query):
-#     """Search for artists based on a query."""
-#     result = d.search(query, type='artist')
-#     if len(result) > 15:
-#         artist_list = [result[i] for i in range(15)]
-#     else:
-#         artist_list = result
-#     for i, artist in enumerate(artist_list):
-#         print(i, artist.name)
-#     return artist_list
-
-
-# def get_artist_id(artist_list, idx):
-#     """Get the id of the artist at index idx in artist_list."""
-#     return artist_list[idx]['id']
-
-
-# def get_albums(artist_id):
-#     """Get the albums from an artist based on their id."""
-#     results = mbz.browse_releases(artist=artist_id,
-#                                   release_status=['official'],
-#                                   includes=['labels'],
-#                                   release_type=['album', 'ep'],
-#                                   limit=100)
-#     releases = results['release-list']
-#     return releases
 
 def get_artist_list(name):
     """Search for artists based on a query."""
@@ -96,3 +41,15 @@ def get_artist_albums(artist):
             print(name)
             unique.add(name)
     return unique
+
+
+def get_pitchfork_reviews(artist_name, album_names):
+    """Get the artists reviews from pitchfork."""
+    reviews = []
+    for album_name in album_names:
+        try:
+            review = pitchfork.search(artist_name, album_name)
+            reviews.append(review)
+        except IndexError:
+            print("Couldn't find {}".format(album_name))
+    return reviews
