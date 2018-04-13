@@ -104,3 +104,4 @@ venv.bak/
 .mypy_cache/
 
 api_keys.py
+credentials.py
