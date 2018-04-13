@@ -15,7 +15,7 @@ def get_pitchfork_reviews(artist_name, album_names):
         temp = []
         for review in reviews:
             # This is necessary because sometimes albums with similar names
-            # get added twice as the pitchfork search is fuzzy
+            # get added twice as the pitchfork API does fuzzy search
             if review not in temp:
                 temp.append(reviews)
         reviews = temp
