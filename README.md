@@ -10,6 +10,7 @@ Clone the repo and install the packages in requirements.txt
 After installing, make sure to download the necessary nltk files with the following commands in python:
 
 ```python
+>> import nltk
 >> nltk.download('punkt')
 >> nltk.download('vader_lexicon')
 ```
