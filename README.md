@@ -22,29 +22,29 @@ Usage
 >> from artist_rating import *
 
 >> al = get_artist_list('anderson') # this will get the artists that match a name and print them with indices
-u'0 Anderson .Paak'
-u'1 Anderson East'
-u'2 Keith Anderson'
-u'3 John Anderson'
-u'4 Lyrica Anderson'
-u'5 Leonard Anderson'
-u'6 Coffey Anderson'
-u'7 Cherine Anderson'
-u'8 Carl Anderson'
-u'9 Eric Anderson'
+0 Anderson .Paak
+1 Anderson East
+2 Keith Anderson
+3 John Anderson
+4 Lyrica Anderson
+5 Leonard Anderson
+6 Coffey Anderson
+7 Cherine Anderson
+8 Carl Anderson
+9 Eric Anderson
 
 >> paak = get_artist(al, 0) # this is basically just indexing a list, probably doesn't need to be its own function
 
 >> albums = get_artist_albums(paak) # get the albums
-u'Total albums: 7'
-u'yes lawd! remixes'
-u'yes lawd!'
-u'malibu'
-u'venice'
+Total albums: 7
+yes lawd! remixes
+yes lawd!
+malibu
+venice
 
 >> reviews = get_pitchfork_reviews(paak['name'], albums) # get the reviews
-u'Couldn\'t find venice'
+Couldn't find venice
 
 >> get_overall_rating(reviews) # finally, we can use sentiment analysis to get a rating for this artist
-u'7.745075112443779'
+7.745075112443779
 ```
