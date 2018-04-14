@@ -48,4 +48,34 @@ Couldn't find venice
 
 >> get_overall_rating(reviews) # finally, we can use sentiment analysis to get a rating for this artist
 7.745075112443779
+
+# Alternatively, there is an easier option in artist_rating that just selects the first artist and spits out a rating
+>> get_rating_from_query('anderson')
+0 Anderson .Paak
+1 Anderson East
+2 Keith Anderson
+3 John Anderson
+4 Lyrica Anderson
+5 Leonard Anderson
+6 Coffey Anderson
+7 Cherine Anderson
+8 Carl Anderson
+9 Eric Anderson
+Total albums: 7
+yes lawd! remixes
+yes lawd!
+malibu
+venice
+Couldn't find venice
+7.745075112443779
+
+# The function above in turn calls a streamlined function for getting a rating directly from the artist object
+>> get_rating_from_artist(paak)
+Total albums: 7
+yes lawd! remixes
+yes lawd!
+malibu
+venice
+Couldn't find venice
+7.745075112443779
 ```

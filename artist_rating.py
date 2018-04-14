@@ -1,5 +1,6 @@
 """This module will be used to assign an artist a score based on their albums."""
 import pitchfork
+import album_discovery
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk import tokenize
 
@@ -44,3 +45,18 @@ def get_overall_rating(reviews):
     total = sum(review.overall_rating for review in reviews)
     avg = total / len(reviews)
     return avg
+
+
+def get_rating_from_artist(artist):
+    """Get an overall rating from an artist json."""
+    albums = album_discovery.get_artist_albums(artist)
+    reviews = get_pitchfork_reviews(artist['name'], albums)
+    return get_overall_rating(reviews)
+
+
+def get_rating_from_query(name):
+    """Get an overall rating by selecting the first artist that matches."""
+    artist_list = album_discovery.get_artist_list(name)
+    if not artist_list:
+        return None
+    return get_rating_from_artist(artist_list[0])
