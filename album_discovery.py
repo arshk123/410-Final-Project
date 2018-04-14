@@ -19,7 +19,7 @@ def get_artist_list(name):
     return None
 
 
-def get_artist_id(artist_list, idx):
+def get_artist(artist_list, idx):
     """Get the id of the artist at index idx in artist_list."""
     return artist_list[idx]
 
