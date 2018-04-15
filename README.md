@@ -15,6 +15,13 @@ After installing, make sure to download the necessary nltk files with the follow
 >> nltk.download('vader_lexicon')
 ```
 
+To run the website locally:
+```shell
+$ export FLASK_APP=project.py
+$ export FLASK_DEBUG=1
+$ flask run
+```
+
 Usage
 -----
 
