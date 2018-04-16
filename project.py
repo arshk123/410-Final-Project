@@ -1,8 +1,10 @@
 from flask import Flask, render_template, session, redirect, url_for, request, jsonify
 from api_keys import spotify_client_id, spotify_client_secret
 import psycopg2
-import credentials
+# import credentials
 import spotipy
+import album_discovery
+import artist_rating
 from spotipy.oauth2 import SpotifyClientCredentials
 
 app = Flask(__name__)
@@ -34,6 +36,9 @@ def user(name):
 
 @app.route('/user/<id>/recommendations')
 def get_user_recommendations(id):
+    # print(artist_rating.get_rating_from_query('Drake'))
+
+    # return json object of hard coded artist for now
     return jsonify([sp.artist('4xRYI6VqpkE3UwrDrAZL8L'), sp.artist('3TVXtAsR1Inumwj472S9r4'), sp.artist('26VFTg2z8YR0cCuwLzESi2'), sp.artist('1Bl6wpkWCQ4KVgnASpvzzA'), sp.artist('536BYVgOnRky0xjsPT96zl'), sp.artist('4kI8Ie27vjvonwaB2ePh8T')])
 
 
