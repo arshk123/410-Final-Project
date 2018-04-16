@@ -52,10 +52,10 @@ def autocomplete():
     results = [artist['name'] for artist in artist_list]
     return jsonify(matching_results=results)
 
-@app.route('/handledata', methods=['POST'])
+@app.route('/handledata/', methods=['POST'])
 def handledata():
-    value = request.args.get('artist_name')
-    print(value)
+    value = request.form['artist_name']
+    print(request.form['artist_name'])
     return 'Some response'
 
 """
