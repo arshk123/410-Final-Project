@@ -17,6 +17,8 @@ After installing, make sure to download the necessary nltk files with the follow
 
 To run the website locally:
 ```shell
+$ git submodule init
+$ git submodule update
 $ export FLASK_APP=project.py
 $ export FLASK_DEBUG=1
 $ flask run
