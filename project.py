@@ -40,6 +40,23 @@ def get_user_recommendations(id):
     # return json object of hard coded artist for now
     return jsonify([sp.artist('4xRYI6VqpkE3UwrDrAZL8L'), sp.artist('3TVXtAsR1Inumwj472S9r4'), sp.artist('26VFTg2z8YR0cCuwLzESi2'), sp.artist('1Bl6wpkWCQ4KVgnASpvzzA'), sp.artist('536BYVgOnRky0xjsPT96zl'), sp.artist('4kI8Ie27vjvonwaB2ePh8T')])
 
+@app.route('/new_artist', methods=['GET', 'POST'])
+def new_artist():
+    return render_template("new_artist.html")
+
+@app.route('/autocomplete', methods=['GET'])
+def autocomplete():
+    search = request.args.get('q')
+    print(search)
+    artist_list = album_discovery.get_artist_list(search)
+    results = [artist['name'] for artist in artist_list]
+    return jsonify(matching_results=results)
+
+@app.route('/handledata', methods=['POST'])
+def handledata():
+    value = request.args.get('artist_name')
+    print(value)
+    return 'Some response'
 
 """
 This function simply serves to test that the postegres database is setup and working properly
