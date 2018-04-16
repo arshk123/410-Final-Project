@@ -30,7 +30,6 @@ def signup():
 
 @app.route('/user/<name>')
 def user(name):
-    get_user_recommendations(1)
     return render_template('user.html', name=name, recs=get_user_recommendations(1))
 
 
