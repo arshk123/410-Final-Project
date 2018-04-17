@@ -6,6 +6,7 @@ import album_discovery
 import artist_rating
 
 app = Flask(__name__)
+app.secret_key = 'super_secret_key'
 
 sp = album_discovery.sp
 
@@ -34,6 +35,7 @@ def signup():
 @app.route('/user/<name>')
 def user(name):
     """Show the user some recommendations."""
+    session['name'] = name
     return render_template('user.html', name=name, recs=get_user_recommendations(1))
 
 
