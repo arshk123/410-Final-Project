@@ -39,5 +39,11 @@ $(document).ready(function(){
                 // $('#row' + i).append('<a href="#" class="list-group-item list-group-item-action flex-column align-items-start"><div class="d-felx w-100 justify-content-between"><h5 class="mb-1">'+data[i].name+'</h5></div></a>')
             }
         }
-    })
+    });
+
+    $('#signOut').click(function(){
+        $.post('/logout', function(data){
+            window.location = data;
+        });
+    });
 });

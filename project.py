@@ -22,21 +22,29 @@ def index():
 def login():
     """Login method."""
     session['email'] = request.form['email']
-    return redirect(url_for('user', name=session['email']))
+    return redirect(url_for('user'))
 
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    """Logout method"""
+    session.pop('email')
+    return url_for('index')
 
 @app.route('/signup', methods=['POST'])
 def signup():
     """Sign a user up."""
-    user_name = request.form['name']
-    return redirect(url_for('user', name=user_name))
+    email = request.form['email']
+    return redirect(url_for('user', email=email))
 
 
-@app.route('/user/<name>')
-def user(name):
+@app.route('/user')
+def user():
     """Show the user some recommendations."""
-    session['name'] = name
-    return render_template('user.html', name=name, recs=get_user_recommendations(1))
+    if 'email' not in session:
+        return render_template('index.html')
+
+    return render_template('user.html', email=session['email'], recs=get_user_recommendations(1))
 
 
 @app.route('/user/<id>/recommendations')
