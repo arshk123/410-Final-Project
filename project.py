@@ -34,8 +34,8 @@ def logout():
 @app.route('/signup', methods=['POST'])
 def signup():
     """Sign a user up."""
-    email = request.form['email']
-    return redirect(url_for('user', email=email))
+    session['email'] = request.form['email']
+    return redirect(url_for('user'))
 
 
 @app.route('/user')
