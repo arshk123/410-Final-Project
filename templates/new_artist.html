@@ -1,0 +1,70 @@
+<html>
+
+<head>
+    <title>Music Rater</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <span class="navbar-brand mb-0 h1 text-light">Music Rater ♪</span>
+        <div class="collapse navbar-collapse" id="navLinks">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for ('user')}}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{url_for ('new_artist')}}">Requst New Artist</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-4">
+            <form class="form-inline my-2 my-lg-0">
+                <div class="form-group">
+                    <input class="form-control" type="search" placeholder="Search for artists" aria-label="Search"/>
+                    <button type="submit" class="btn btn-light my-2 my-sm-0">Search</button>
+                </div>
+            </form>
+        </div>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarUserInfo">
+            <span class="navbar-text">Signed in as {{ email }} </span>
+            <button id="signOut" type="button" class="btn btn-outline-success ml-2">Sign Out</button>
+        </div>
+    </nav>
+    <div>
+        <input name="autocomplete" type="text" id="autocomplete" class="form-control input-lg"/>
+    </div>
+</body>
+
+<script>
+$(function() {
+    $("#autocomplete").autocomplete({
+        source:function(request, response) {
+            $.getJSON("{{url_for('autocomplete')}}",{
+                q: request.term, // in flask, "q" will be the argument to look for using request.args
+            }, function(data) {
+                response(data.matching_results); // matching_results from jsonify
+            });
+        },
+        minLength: 3,
+        select: function(event, ui) {
+            $.post("{{url_for('handledata')}}", {artist_name: ui.item.value},
+                function(data) {
+                    console.log(data)
+                }, 'json');
+            console.log(ui.item.value); // not in your question, but might help later
+        }
+    });
+})
+</script>
+</html>

@@ -39,6 +39,8 @@ def get_sentiment_rating(review_text):
 
 def get_overall_rating(reviews):
     """Get the overall rating based on a set of reviews."""
+    if len(reviews) < 1:
+        return -1
     for review in reviews:
         review.sentiment = get_sentiment_rating(review.full_text())
         review.overall_rating = 0.8 * review.score() + 0.2 * review.sentiment

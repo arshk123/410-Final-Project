@@ -2,7 +2,8 @@
     <head>
         <title>CS 410 Final Project</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
+        <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
 
@@ -15,10 +16,10 @@
                 <span class="navbar-brand mb-0 h1 text-light">Music Rater ♪</span>
             </div>
             <div class="collapse navbar-collapse justify-content-end" id="navbarSignIn">
-                <form class="form-inline my-2 my-lg-0">
+                <form action="/login" method="post" class="form-inline my-2 my-lg-0">
                     <input name="email" class="form-control mr-sm-2" type="email" placeholder="Email" required/>
                     <input name="password" class="form-control mr-sm-2" type="password" placeholder="Password" required/>
-                    <button type="button" class="btn btn-primary" type="submit">Sign In</button>
+                    <button class="btn btn-primary" type="submit" id="signIn">Sign In</button>
                 </form>
             </div>
         </nav>
@@ -72,7 +73,7 @@
                             </div>
                             <div class="form-group row">
                                 <div class="col-sm-10">
-                                    <input type="email" class="form-control" id="emailSignup" placeholder="Email Address" required>
+                                    <input name="email" type="email" class="form-control" id="emailSignup" placeholder="Email Address" required>
                                 </div>
                             </div>
                             <div class="form-group row">
