@@ -26,7 +26,11 @@ $ flask run
 
 Usage
 -----
+```
+Database Import/export
 
+https://www.a2hosting.com/kb/developer-corner/postgresql/import-and-export-a-postgresql-database
+```
 ```python
 >> from album_discovery import *
 >> from artist_rating import *
