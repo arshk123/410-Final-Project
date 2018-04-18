@@ -56,6 +56,14 @@ def get_user_recommendations(id):
     return jsonify([sp.artist('4xRYI6VqpkE3UwrDrAZL8L'), sp.artist('3TVXtAsR1Inumwj472S9r4'), sp.artist('26VFTg2z8YR0cCuwLzESi2'), sp.artist('1Bl6wpkWCQ4KVgnASpvzzA'), sp.artist('536BYVgOnRky0xjsPT96zl'), sp.artist('4kI8Ie27vjvonwaB2ePh8T')])
 
 
+@app.route('/artist/<id>')
+def artist(id):
+    """Endpoint for artist page"""
+    artist = sp.artist(id)
+    albums = album_discovery.get_artist_albums(artist, full_album_info=True)
+
+    return render_template("artist.html", artist=artist, albums=albums, email=session['email'])
+
 @app.route('/new_artist', methods=['GET', 'POST'])
 def new_artist():
     """Search page for adding a new artist to the db."""
