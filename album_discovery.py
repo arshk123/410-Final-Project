@@ -24,7 +24,7 @@ def get_artist(artist_list, idx):
     return artist_list[idx]
 
 
-def get_artist_albums(artist):
+def get_artist_albums(artist, full_album_info=False):
     """Get the albums of the artist."""
     albums = []
     results = sp.artist_albums(artist['id'], album_type='album')
@@ -34,9 +34,14 @@ def get_artist_albums(artist):
         albums.extend(results['items'])
     print('Total albums:', len(albums))
     unique = set()  # skip duplicate albums
+    album_list = []
     for album in albums:
         name = album['name'].lower()
         if name not in unique:
             print(name)
             unique.add(name)
+            album_list.append(album)
+
+    if full_album_info:
+        return album_list
     return unique
