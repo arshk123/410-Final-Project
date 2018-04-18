@@ -9,7 +9,7 @@
         <script type="text/javascript" src="{{url_for('static', filename='signout.js')}}"></script>
         <script type="text/javascript" src="{{url_for('static', filename='artist.js')}}"></script>
     </head>
-    <body>
+    <body class="bg-light">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <span class="navbar-brand mb-0 h1 text-light">Music Rater ♪</span>
             <div class="collapse navbar-collapse" id="navLinks">
@@ -82,15 +82,13 @@
                             <div class="row">
                         {% endif %}
                         <div class="col">
-                            <div class="card mb-1 " style="width:17rem; height:25rem">
-                                <img class="card-img-top" src="{{album['images'][0]['url']}}"/>
+                                <img style="width:15rem; height:15rem" class="rounded-circle" src="{{album['images'][0]['url']}}"/>
                                 <div class="card-body">
                                     <h5>{{album['name']}}</h5>
                                     <p class="card-text">
                                         Released <br />{{album['release_date']}}
                                     </p>
                                 </div>
-                            </div>
                         </div>
                     {% endfor %}
                 </div>
