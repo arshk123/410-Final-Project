@@ -95,7 +95,7 @@ CREATE TABLE users (
     email character varying(80),
     password text,
     username text,
-    id integer NOT NULL
+    id SERIAL
 );
 
 
