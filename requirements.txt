@@ -16,5 +16,6 @@ requests-oauthlib==0.8.0
 six==1.11.0
 spotipy==2.4.4
 twython==3.6.0
+unidecode==1.0.22
 urllib3==1.22
 Werkzeug==0.14.1
