@@ -60,5 +60,5 @@ def get_rating_from_query(name):
     """Get an overall rating by selecting the first artist that matches."""
     artist_list = album_discovery.get_artist_list(name)
     if not artist_list:
-        return None
+        return -1
     return get_rating_from_artist(artist_list[0])
