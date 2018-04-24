@@ -1,8 +1,10 @@
 """This module will be used to get a list of albums based on an artist's name."""
-from api_keys import spotify_client_id, spotify_client_secret
+import os
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
+spotify_client_id = os.environ.get('SPOTIFY_CLIENT_ID', '')
+spotify_client_secret = os.environ.get('SPOTIFY_CLIENT_SECRET', '')
 spotify_credentials_manager = SpotifyClientCredentials(client_id=spotify_client_id,
                                                        client_secret=spotify_client_secret)
 sp = spotipy.Spotify(client_credentials_manager=spotify_credentials_manager)

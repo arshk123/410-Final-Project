@@ -1,5 +1,6 @@
 """The flasks server that runs our project."""
 from flask import Flask, render_template, session, redirect, url_for, request, jsonify
+from werkzeug.security import generate_password_hash, check_password_hash
 import psycopg2
 # import credentials
 import album_discovery
@@ -22,7 +23,20 @@ def index():
 def login():
     """Login method."""
     session['email'] = request.form['email']
-    return redirect(url_for('user'))
+    conn = connect_to_db()
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM users WHERE email=%s', [request.form['email']])
+
+    rows = cur.fetchall()
+    if len(rows) != 0:
+        db_password = rows[0][1]
+        password_entered = request.form['password']
+
+        if check_password_hash(db_password, password_entered):
+            return redirect(url_for('user'))
+
+    return render_template('index.html'), 400
+
 
 
 @app.route('/logout', methods=['POST'])
@@ -34,8 +48,21 @@ def logout():
 @app.route('/signup', methods=['POST'])
 def signup():
     """Sign a user up."""
+    conn = connect_to_db()
+    cur = conn.cursor()
+
+    cur.execute('SELECT * FROM users WHERE email=%s', [request.form['email']])
+
+    if len(cur.fetchall()) != 0:
+        return render_template('index.html'), 400
+
+    hashed_password = generate_password_hash(request.form['password'])
+    cur.execute('INSERT INTO users VALUES (%s, %s, %s)', [request.form['email'], hashed_password, request.form['username']])
     session['email'] = request.form['email']
-    return redirect(url_for('user'))
+    conn.commit()
+    conn.close()
+
+    return jsonify(redirect_url='/user')
 
 
 @app.route('/user')
@@ -89,14 +116,14 @@ def handledata():
     return jsonify(artist=artist_name, rating=artist_rate)
 
 
-def test_db():
+def connect_to_db():
     """Test that the postegres database is setup and working properly."""
-    dbname = 'cs410project'
+    dbname = 'musicrater'
     user = credentials.login['user']
     password = credentials.login['password']
     conn = psycopg2.connect(dbname=dbname, user=user, password=password)
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM test")
-    print(cur.fetchall())
-    cur.close()
-    conn.close()
+    # cur = conn.cursor()
+    # cur.execute("SELECT * FROM test")
+    # print(cur.fetchall())
+    # cur.close()
+    return conn
