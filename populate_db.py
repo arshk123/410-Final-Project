@@ -94,9 +94,13 @@ if __name__ == '__main__':
     print("Found {} artists using the billboard API".format(len(artists)))
     batches = get_batches(artists)
     n = len(batches)
+    failed_artists = []
     for i, batch in enumerate(batches):
         print("Beginning population with batch {}/{}".format(i, n))
         try:
             populate_db(batch)
         except Exception:
+            failed_artists.extend(batch)
             print("Failed batch {} containing {}".format(i, batch))
+    print("Failed to add the following artists to the db:\n{}".format(failed_artists))
+    # add_single_artist(artists[1])
