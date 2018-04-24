@@ -2,7 +2,7 @@
 from flask import Flask, render_template, session, redirect, url_for, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 import psycopg2
-import credentials
+# import credentials
 import album_discovery
 import artist_rating
 
