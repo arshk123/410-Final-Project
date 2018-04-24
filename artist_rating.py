@@ -2,12 +2,8 @@
 import album_discovery
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk import tokenize
-import nltk
 import pitchfork
 from unidecode import unidecode
-
-nltk.download('punkt')
-nltk.download('vader_lexicon')
 
 
 def get_pitchfork_reviews(artist_name, album_names):
