@@ -2,6 +2,7 @@
 import album_discovery
 import artist_rating
 import billboard
+import os
 import psycopg2
 from psycopg2.extras import execute_batch
 from time import sleep
@@ -11,8 +12,7 @@ chart_names = ['artist-100']#, 'greatest-hot-100-women-artists',
                # 'greatest-of-all-time-pop-songs-artists', 'greatest-top-dance-club-artists',
                # 'greatest-r-b-hip-hop-artists', 'greatest-hot-100-artists']
 
-dbname = 'cs410project'
-user = 'postgres'
+DATABASE_URL = os.environ['DATABASE_URL']
 
 
 def get_artists_from_charts():
@@ -53,7 +53,7 @@ def populate_db(artists):
             artists.append(artist)
             sleep(0.5)
 
-    conn = psycopg2.connect(dbname=dbname, user=user)
+    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
     cur = conn.cursor()
     insert_query = 'INSERT INTO artists (name, review, s_id) VALUES (%s, %s, %s) ON CONFLICT (s_id) DO UPDATE SET review=%s, lastupdated=DEFAULT'
     execute_batch(cur, insert_query, rated_artists)
@@ -71,7 +71,7 @@ def add_single_artist(artist):
     artist_json = artist_list[0]
     rating = artist_rating.get_rating_from_artist(artist_json)
 
-    conn = psycopg2.connect(dbname=dbname, user=user)
+    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
     cur = conn.cursor()
     if rating > 0:
         vals = (artist_json['name'], rating, artist_json['id'], rating)
