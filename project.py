@@ -119,7 +119,7 @@ def handledata():
     except Exception:
         abort(418)
 
-    return redirect(url_for('artist', id=s_id))
+    return jsonify(redirect_url='/artist/{}'.format(s_id))
 
 
 def connect_to_db():
