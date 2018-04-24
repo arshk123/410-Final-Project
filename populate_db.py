@@ -85,6 +85,7 @@ def add_single_artist(artist):
     conn.commit()
     cur.close()
     conn.close()
+    return vals
 
 
 if __name__ == '__main__':
