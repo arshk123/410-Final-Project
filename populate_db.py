@@ -11,17 +11,8 @@ chart_names = ['artist-100']#, 'greatest-hot-100-women-artists',
                # 'greatest-of-all-time-pop-songs-artists', 'greatest-top-dance-club-artists',
                # 'greatest-r-b-hip-hop-artists', 'greatest-hot-100-artists']
 
-
-def test_db():
-    """Test that the postgres database is setup and working properly."""
-    dbname = 'cs410project'
-    user = 'postgres'
-    conn = psycopg2.connect(dbname=dbname, user=user)
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM test")
-    print(cur.fetchall())
-    cur.close()
-    conn.close()
+dbname = 'cs410project'
+user = 'postgres'
 
 
 def get_artists_from_charts():
@@ -62,8 +53,6 @@ def populate_db(artists):
             artists.append(artist)
             sleep(0.5)
 
-    dbname = 'cs410project'
-    user = 'postgres'
     conn = psycopg2.connect(dbname=dbname, user=user)
     cur = conn.cursor()
     insert_query = 'INSERT INTO artists (name, review, s_id) VALUES (%s, %s, %s) ON CONFLICT (s_id) DO UPDATE SET review=%s, lastupdated=DEFAULT'
@@ -76,15 +65,41 @@ def populate_db(artists):
     conn.close()
 
 
+def add_single_artist(artist):
+    """Add a single artist by name. Only to be used with the name we get from spotify."""
+    artist_list = album_discovery.get_artist_list(artist)
+    artist_json = artist_list[0]
+    rating = artist_rating.get_rating_from_artist(artist_json)
+
+    conn = psycopg2.connect(dbname=dbname, user=user)
+    cur = conn.cursor()
+    if rating > 0:
+        vals = (artist_json['name'], rating, artist_json['id'], rating)
+        query = 'INSERT INTO artists (name, review, s_id) VALUES (%s, %s, %s) ON CONFLICT (s_id) DO UPDATE SET review=%s, lastupdated=DEFAULT'
+    else:
+        print("Couldn't find any album reviews for {}".format(artist))
+        vals = (artist_json['name'], artist_json['id'])
+        query = 'INSERT INTO artists (name, s_id) VALUES (%s, %s) ON CONFLICT (s_id) DO UPDATE SET lastupdated=DEFAULT'
+
+    cur.execute(query, vals)
+    conn.commit()
+    cur.close()
+    conn.close()
+
+
 if __name__ == '__main__':
     # artists = get_artists_from_charts()
     artists = ['Janelle Monae', 'Anderson .Paak']
     print("Found {} artists using the billboard API".format(len(artists)))
     batches = get_batches(artists)
     n = len(batches)
+    failed_artists = []
     for i, batch in enumerate(batches):
         print("Beginning population with batch {}/{}".format(i, n))
         try:
             populate_db(batch)
         except Exception:
+            failed_artists.extend(batch)
             print("Failed batch {} containing {}".format(i, batch))
+    print("Failed to add the following artists to the db:\n{}".format(failed_artists))
+    # add_single_artist(artists[1])
