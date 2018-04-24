@@ -1,12 +1,15 @@
 """This module will be used to assign an artist a score based on their albums."""
-import pitchfork
 import album_discovery
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk import tokenize
+import pitchfork
+from unidecode import unidecode
 
 
 def get_pitchfork_reviews(artist_name, album_names):
     """Get the artists reviews from pitchfork."""
+    # this line is needed because the python requests library requires values to be ascii
+    artist_name = unidecode(artist_name)
     reviews = []
     for album_name in album_names:
         try:
@@ -60,5 +63,5 @@ def get_rating_from_query(name):
     """Get an overall rating by selecting the first artist that matches."""
     artist_list = album_discovery.get_artist_list(name)
     if not artist_list:
-        return None
+        return -1
     return get_rating_from_artist(artist_list[0])
