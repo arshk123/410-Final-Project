@@ -115,11 +115,11 @@ def handledata():
     """Used to handle an artist request."""
     artist_name = request.form['artist_name']
     try:
-        retval = add_single_artist(artist_name)
+        s_id = add_single_artist(artist_name)
     except Exception:
         abort(418)
 
-    return jsonify(retval)
+    return redirect(url_for('artist', id=s_id))
 
 
 def connect_to_db():
