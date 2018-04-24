@@ -102,5 +102,6 @@ if __name__ == '__main__':
             failed_artists.extend(batch)
             print(e)
             print("Failed batch {} containing {}".format(i, batch))
-    print("Failed to add the following artists to the db:\n{}".format(failed_artists))
+    if len(failed_artists) > 0:
+        print("Failed to add the following artists to the db:\n{}".format(failed_artists))
     # add_single_artist(artists[1])
