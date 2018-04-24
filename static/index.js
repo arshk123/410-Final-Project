@@ -16,6 +16,7 @@ $(document).ready(function(){
         else {
             $.ajax({
                 type: 'POST',
+                method: 'POST',
                 dataType: 'json',
                 data: $(this).serialize(),
                 url: '/signup',
