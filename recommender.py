@@ -1,5 +1,3 @@
-from album_discovery import *
-from artist_rating import *
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from api_keys import spotify_client_id, spotify_client_secret
@@ -52,7 +50,7 @@ class Recommender:
     def loadData(self):
         pass
 
-    def buildSampleDataset(self, numSamples=100):
+    def buildSampleDataset(self, numSamples=10):
         data = {
             'userID' : [],
             'itemID' : [],
@@ -76,11 +74,9 @@ class Recommender:
                     users.append(num)
                     items.append(ind)
                     ratings.append(random.randint(1,11))
-        # print(len(users), len(ratings), len(items))
         data['itemID'] = items
         data['userID'] = users
         data['ratings'] = ratings
-        # print(data)
         return data, labels
 
     def recommend(self, artist):
