@@ -13,6 +13,7 @@ def get_pitchfork_reviews(artist_name, album_names):
     reviews = []
     for album_name in album_names:
         try:
+            album_name = unidecode(album_name)
             review = pitchfork.search(artist_name, album_name)
             reviews.append(review)
         except IndexError:
