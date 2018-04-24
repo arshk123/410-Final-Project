@@ -12,18 +12,6 @@ chart_names = ['artist-100']#, 'greatest-hot-100-women-artists',
                # 'greatest-r-b-hip-hop-artists', 'greatest-hot-100-artists']
 
 
-def test_db():
-    """Test that the postgres database is setup and working properly."""
-    dbname = 'cs410project'
-    user = 'postgres'
-    conn = psycopg2.connect(dbname=dbname, user=user)
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM test")
-    print(cur.fetchall())
-    cur.close()
-    conn.close()
-
-
 def get_artists_from_charts():
     """Get a list of artists from different charts."""
     artists = set()
@@ -71,6 +59,30 @@ def populate_db(artists):
     conn.commit()
     unrated_query = 'INSERT INTO artists (name, s_id) VALUES (%s, %s) ON CONFLICT (s_id) DO UPDATE SET lastupdated=DEFAULT'
     execute_batch(cur, unrated_query, unrated_artists)
+    conn.commit()
+    cur.close()
+    conn.close()
+
+
+def add_single_artist(artist):
+    """Add a single artist by name. Only to be used with the name we get from spotify."""
+    artist_list = album_discovery.get_artist_list(artist)
+    artist_json = artist_list[0]
+    rating = artist_rating.get_rating_from_artist(artist_json)
+
+    dbname = 'cs410project'
+    user = 'postgres'
+    conn = psycopg2.connect(dbname=dbname, user=user)
+    cur = conn.cursor()
+    if rating > 0:
+        vals = (artist_json['name'], rating, artist_json['id'], rating)
+        query = 'INSERT INTO artists (name, review, s_id) VALUES (%s, %s, %s) ON CONFLICT (s_id) DO UPDATE SET review=%s, lastupdated=DEFAULT'
+    else:
+        print("Couldn't find any album reviews for {}".format(artist))
+        vals = (artist_json['name'], artist_json['id'])
+        query = 'INSERT INTO artists (name, s_id) VALUES (%s, %s) ON CONFLICT (s_id) DO UPDATE SET lastupdated=DEFAULT'
+
+    cur.execute(query, vals)
     conn.commit()
     cur.close()
     conn.close()
