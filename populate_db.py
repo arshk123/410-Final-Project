@@ -98,7 +98,7 @@ if __name__ == '__main__':
         print("Beginning population with batch {}/{}".format(i, n))
         try:
             populate_db(batch)
-        except Exception e:
+        except Exception as e:
             failed_artists.extend(batch)
             print(e)
             print("Failed batch {} containing {}".format(i, batch))
