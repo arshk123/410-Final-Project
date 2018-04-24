@@ -116,10 +116,11 @@ def handledata():
     artist_name = request.form['artist_name']
     try:
         s_id = add_single_artist(artist_name)
-    except Exception:
+    except Exception as e:
+        print(e)
         abort(418)
 
-    return redirect(url_for('artist', id=s_id))
+    return jsonify(redirect_url='/artist/{}'.format(s_id))
 
 
 def connect_to_db():
