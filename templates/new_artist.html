@@ -63,7 +63,7 @@ $(function() {
                 type: 'POST',
                 dataType: 'json',
                 data: {artist_name: ui.item.value},
-                url: '/handledata',
+                url: '/handledata/',
                 success: function(response){
                     console.log(response)
                     window.location.replace(response.redirect_url);
