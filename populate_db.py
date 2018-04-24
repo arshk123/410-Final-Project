@@ -11,6 +11,9 @@ chart_names = ['artist-100']#, 'greatest-hot-100-women-artists',
                # 'greatest-of-all-time-pop-songs-artists', 'greatest-top-dance-club-artists',
                # 'greatest-r-b-hip-hop-artists', 'greatest-hot-100-artists']
 
+dbname = 'cs410project'
+user = 'postgres'
+
 
 def get_artists_from_charts():
     """Get a list of artists from different charts."""
@@ -50,8 +53,6 @@ def populate_db(artists):
             artists.append(artist)
             sleep(0.5)
 
-    dbname = 'cs410project'
-    user = 'postgres'
     conn = psycopg2.connect(dbname=dbname, user=user)
     cur = conn.cursor()
     insert_query = 'INSERT INTO artists (name, review, s_id) VALUES (%s, %s, %s) ON CONFLICT (s_id) DO UPDATE SET review=%s, lastupdated=DEFAULT'
@@ -70,8 +71,6 @@ def add_single_artist(artist):
     artist_json = artist_list[0]
     rating = artist_rating.get_rating_from_artist(artist_json)
 
-    dbname = 'cs410project'
-    user = 'postgres'
     conn = psycopg2.connect(dbname=dbname, user=user)
     cur = conn.cursor()
     if rating > 0:
