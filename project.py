@@ -2,6 +2,7 @@
 from flask import Flask, render_template, session, redirect, url_for, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 import psycopg2
+import os
 # import credentials
 import album_discovery
 import artist_rating
@@ -10,6 +11,7 @@ app = Flask(__name__)
 app.secret_key = 'super_secret_key'
 
 sp = album_discovery.sp
+DATABASE_URL = os.environ['DATABASE_URL']
 
 
 @app.route('/')
@@ -118,10 +120,10 @@ def handledata():
 
 def connect_to_db():
     """Test that the postegres database is setup and working properly."""
-    dbname = 'musicrater'
-    user = credentials.login['user']
-    password = credentials.login['password']
-    conn = psycopg2.connect(dbname=dbname, user=user, password=password)
+    # dbname = 'musicrater'
+    # user = credentials.login['user']
+    # password = credentials.login['password']
+    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
     # cur = conn.cursor()
     # cur.execute("SELECT * FROM test")
     # print(cur.fetchall())
