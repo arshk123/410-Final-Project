@@ -85,6 +85,7 @@ def add_single_artist(artist):
     conn.commit()
     cur.close()
     conn.close()
+    print("Finished adding {}".format(artist))
     return artist_json['s_id']
 
 
