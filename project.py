@@ -19,6 +19,8 @@ DATABASE_URL = os.environ['DATABASE_URL']
 def index():
     """Endpoint for the home page."""
     # test_db()
+    if 'email' in session:
+        return redirect(url_for('user'))
     return render_template('index.html')
 
 
