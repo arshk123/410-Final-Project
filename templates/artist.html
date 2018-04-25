@@ -40,11 +40,21 @@
         </nav>
         <div class="container">
             <div class="row">
-                <h1 class="display-3">{{artist['name']}}</h1><h1 class="mt-4 ml-2"><span class="badge badge-dark">8.7</span></h1>
+                <h1 class="display-3">{{artist['name']}}</h1><h1 class="mt-4 ml-2"><span class="badge badge-dark">{% if rating is number %}{{ rating|round(1) }}{% else %}-{% endif %}</span></h1>
             </div>
             <div class="row">
                 <div class="col">
+                    {% if rating is string %}
+                    <p>
+                        <b>{{ rating }}</b>
+                    </p>
+                    {% endif %}
                     <img width="350" height="350" src="{{artist['images'][0]['url']}}" class="img-thumbnail float-none">
+                    {% if lastupdated is not none %}
+                    <p>
+                        <b>This artist's rating was last updated on {{ lastupdated['date'] }} at {{ lastupdated['time'] }}.</b>
+                    </p>
+                    {% endif %}
                     <p>
                         <b>Genres:</b>
                         {% for genre in artist['genres']%}

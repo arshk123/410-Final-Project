@@ -6,7 +6,7 @@ import os
 import threading
 # import credentials
 import album_discovery
-from populate_db import add_single_artist_from_json
+from populate_db import add_single_artist_from_json, artist_queue
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'
@@ -31,6 +31,8 @@ def login():
     cur.execute('SELECT * FROM users WHERE email=%s', [request.form['email']])
 
     rows = cur.fetchall()
+    cur.close()
+    conn.close()
     if len(rows) != 0:
         db_password = rows[0][1]
         password_entered = request.form['password']
@@ -83,7 +85,9 @@ def get_user_recommendations(id):
     # print(artist_rating.get_rating_from_query('Drake'))
 
     # return json object of hard coded artist for now
-    return jsonify([sp.artist('4xRYI6VqpkE3UwrDrAZL8L'), sp.artist('3TVXtAsR1Inumwj472S9r4'), sp.artist('26VFTg2z8YR0cCuwLzESi2'), sp.artist('1Bl6wpkWCQ4KVgnASpvzzA'), sp.artist('536BYVgOnRky0xjsPT96zl'), sp.artist('4kI8Ie27vjvonwaB2ePh8T')])
+    return jsonify([sp.artist('4xRYI6VqpkE3UwrDrAZL8L'), sp.artist('3TVXtAsR1Inumwj472S9r4'),
+                    sp.artist('26VFTg2z8YR0cCuwLzESi2'), sp.artist('1Bl6wpkWCQ4KVgnASpvzzA'),
+                    sp.artist('536BYVgOnRky0xjsPT96zl'), sp.artist('4kI8Ie27vjvonwaB2ePh8T')])
 
 
 @app.route('/artist/<id>')
@@ -91,8 +95,32 @@ def artist(id):
     """Endpoint for artist page."""
     artist = sp.artist(id)
     albums = album_discovery.get_artist_albums(artist, full_album_info=True)
+    conn = connect_to_db()
+    cur = conn.cursor()
+    cur.execute('SELECT review, lastupdated FROM albums WHERE s_id=%s', id)
+    rating_row = cur.fetchone()
+    cur.close()
+    conn.close()
+    rating = None
+    lastupdated = None
+    if rating_row is None:
+        rating = "This artist is pending addition to our database"
+        if artist not in artist_queue:
+            print("Adding {} to the queue".format(artist['name']))
+            t = threading.Thread(target=add_single_artist_from_json, args=(artist,))
+            t.start()
+    elif rating_row[0] is None:
+        rating = "We couldn't find any reviews for this artist on pitchfork. You can still rate this artist in order to improve your recommendations."
+        if artist not in artist_queue:
+            print("Adding {} to the queue".format(artist['name']))
+            t = threading.Thread(target=add_single_artist_from_json, args=(artist,))
+            t.start()
+        lastupdated = {'date': rating_row[1].strftime("%Y-%m-%d"), 'time': rating_row[1].strftime("%H:%M")}
+    else:
+        rating = rating_row[0]
+        lastupdated = {'date': rating_row[1].strftime("%Y-%m-%d"), 'time': rating_row[1].strftime("%H:%M")}
 
-    return render_template("artist.html", artist=artist, albums=albums, email=session['email'])
+    return render_template("artist.html", artist=artist, albums=albums, email=session['email'], rating=rating, lastupdated=lastupdated)
 
 
 @app.route('/new_artist', methods=['GET', 'POST'])
@@ -121,8 +149,10 @@ def handledata():
         abort(418)
     artist_json = artist_list[0]
     try:
-        t = threading.Thread(target=add_single_artist_from_json, args=(artist_json,))
-        t.start()
+        if artist_json not in artist_queue:
+            print("Adding {} to the queue".format(artist_json['name']))
+            t = threading.Thread(target=add_single_artist_from_json, args=(artist_json,))
+            t.start()
     except Exception as e:
         print(e)
         abort(418)

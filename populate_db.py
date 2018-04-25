@@ -15,6 +15,7 @@ chart_names = ['artist-100']#, 'greatest-hot-100-women-artists',
 
 DATABASE_URL = os.environ['DATABASE_URL']
 single_artist_lock = threading.Lock()
+artist_queue = []
 
 
 def get_artists_from_charts():
@@ -99,6 +100,7 @@ def add_single_artist(artist):
 
 def add_single_artist_from_json(artist_json):
     """Add a single artist by name. Only to be used with the name we get from spotify."""
+    artist_queue.append(artist_json)
     artist = artist_json['name']
     rating = artist_rating.get_rating_from_artist(artist_json)
 
@@ -118,6 +120,7 @@ def add_single_artist_from_json(artist_json):
         cur.close()
         conn.close()
         print("Finished adding {}".format(artist))
+        artist_queue.remove(artist_json)
         return artist_json['id']
 
 
