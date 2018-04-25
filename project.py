@@ -127,7 +127,7 @@ def handledata():
         print(e)
         abort(418)
 
-    return jsonify(redirect_url='/artist/{}'.format(artist['id']))
+    return jsonify(redirect_url='/artist/{}'.format(artist_json['id']))
 
 
 def connect_to_db():
