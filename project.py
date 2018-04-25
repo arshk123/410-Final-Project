@@ -81,8 +81,8 @@ def user():
     return render_template('user.html', email=session['email'], recs=get_user_recommendations(1))
 
 
-@app.route('/user/<id>/recommendations')
-def get_user_recommendations(id):
+@app.route('/user/<u_id>/recommendations')
+def get_user_recommendations(u_id):
     """Get recommendations based on a user's id."""
     # print(artist_rating.get_rating_from_query('Drake'))
 
@@ -92,14 +92,14 @@ def get_user_recommendations(id):
                     sp.artist('536BYVgOnRky0xjsPT96zl'), sp.artist('4kI8Ie27vjvonwaB2ePh8T')])
 
 
-@app.route('/artist/<id>')
-def artist(id):
+@app.route('/artist/<s_id>')
+def artist(s_id):
     """Endpoint for artist page."""
-    artist = sp.artist(id)
+    artist = sp.artist(s_id)
     albums = album_discovery.get_artist_albums(artist, full_album_info=True)
     conn = connect_to_db()
     cur = conn.cursor()
-    cur.execute('SELECT review, lastupdated FROM albums WHERE s_id=%s', id)
+    cur.execute('SELECT review, lastupdated FROM albums WHERE s_id=%s', artist['id'])
     rating_row = cur.fetchone()
     cur.close()
     conn.close()
