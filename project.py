@@ -99,7 +99,7 @@ def artist(s_id):
     albums = album_discovery.get_artist_albums(artist, full_album_info=True)
     conn = connect_to_db()
     cur = conn.cursor()
-    cur.execute('SELECT review, lastupdated FROM albums WHERE s_id=%s', artist['id'])
+    cur.execute('SELECT review, lastupdated FROM albums WHERE s_id=%s;', artist['id'])
     rating_row = cur.fetchone()
     cur.close()
     conn.close()
