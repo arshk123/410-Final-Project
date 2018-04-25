@@ -94,7 +94,7 @@ def add_single_artist(artist):
         cur.close()
         conn.close()
         print("Finished adding {}".format(artist))
-        return artist_json['s_id']
+        return artist_json['id']
 
 
 def add_single_artist_from_json(artist_json):
@@ -118,7 +118,7 @@ def add_single_artist_from_json(artist_json):
         cur.close()
         conn.close()
         print("Finished adding {}".format(artist))
-        return artist_json['s_id']
+        return artist_json['id']
 
 
 if __name__ == '__main__':
