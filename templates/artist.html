@@ -45,15 +45,11 @@
             <div class="row">
                 <div class="col">
                     {% if rating is string %}
-                    <p>
-                        <b>{{ rating }}</b>
-                    </p>
+                    <p>{{ rating }}</p>
                     {% endif %}
                     <img width="350" height="350" src="{{artist['images'][0]['url']}}" class="img-thumbnail float-none">
                     {% if lastupdated is not none %}
-                    <p>
-                        <b>This artist's rating was last updated on {{ lastupdated['date'] }} at {{ lastupdated['time'] }}.</b>
-                    </p>
+                    <p>This artist's rating was last updated on {{ lastupdated['date'] }} at {{ lastupdated['time'] }}.</p>
                     {% endif %}
                     <p>
                         <b>Genres:</b>
