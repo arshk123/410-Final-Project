@@ -3,9 +3,10 @@ from flask import Flask, abort, render_template, session, redirect, url_for, req
 from werkzeug.security import generate_password_hash, check_password_hash
 import psycopg2
 import os
+import threading
 # import credentials
 import album_discovery
-from populate_db import add_single_artist
+from populate_db import add_single_artist_from_json
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'
@@ -114,13 +115,19 @@ def autocomplete():
 def handledata():
     """Used to handle an artist request."""
     artist_name = request.form['artist_name']
+    artist_list = album_discovery.get_artist_list(artist_name)
+    if not artist_list:
+        print("Couldn't find artist {}".format(artist_name))
+        abort(418)
+    artist_json = artist_list[0]
     try:
-        s_id = add_single_artist(artist_name)
+        t = threading.Thread(target=add_single_artist_from_json, args=(artist_json,))
+        t.start()
     except Exception as e:
         print(e)
         abort(418)
 
-    return jsonify(redirect_url='/artist/{}'.format(s_id))
+    return jsonify(redirect_url='/artist/{}'.format(artist['id']))
 
 
 def connect_to_db():
