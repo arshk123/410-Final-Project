@@ -28,8 +28,8 @@
             <div class="col-4">
                 <form class="form-inline my-2 my-lg-0">
                     <div class="form-group">
-                        <input class="form-control" type="search" placeholder="Search for artists" aria-label="Search"/>
-                        <button type="submit" class="btn btn-light my-2 my-sm-0">Search</button>
+                        <input class="form-control" name="autocomplete" type="text" id="autocomplete" placeholder="Search for artists" aria-label="Search"/>
+                        <!-- <button type="submit" class="btn btn-light my-2 my-sm-0">Search</button> -->
                     </div>
                 </form>
             </div>
@@ -101,4 +101,31 @@
             </div>
         </div>
     </body>
+
+<script>
+$(function() {
+    $("#autocomplete").autocomplete({
+        source:function(request, response) {
+            $.getJSON("{{url_for('autocomplete')}}",{
+                q: request.term, // in flask, "q" will be the argument to look for using request.args
+            }, function(data) {
+                response(data.matching_results); // matching_results from jsonify
+            });
+        },
+        minLength: 3,
+        select: function(event, ui) {
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                data: {artist_name: ui.item.value},
+                url: '/handledata/',
+                success: function(response){
+                    console.log(response)
+                    window.location.replace(response.redirect_url);
+                }
+            });
+        }
+    });
+})
+</script>
 </html>
