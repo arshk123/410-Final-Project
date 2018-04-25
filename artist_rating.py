@@ -13,6 +13,7 @@ def get_pitchfork_reviews(artist_name, album_names):
     reviews = []
     for album_name in album_names:
         try:
+            album_name = unidecode(album_name)
             review = pitchfork.search(artist_name, album_name)
             reviews.append(review)
         except IndexError:
@@ -35,8 +36,8 @@ def get_sentiment_rating(review_text):
     ss = [sid.polarity_scores(sentence) for sentence in sentences]
     avg_sentiment = {k: sum(t[k] for t in ss) / len(ss) for k in ss[0]}
     # Compound score (low = more negative) is scaled from -1 to 1
-    # This scales it from 0 to 10 instead
-    compound = (avg_sentiment['compound'] + 1) * 5
+    # This scales it from 0 to 1 instead
+    compound = (avg_sentiment['compound'] + 1) / 2
     return compound
 
 
@@ -46,7 +47,8 @@ def get_overall_rating(reviews):
         return -1
     for review in reviews:
         review.sentiment = get_sentiment_rating(review.full_text())
-        review.overall_rating = 0.8 * review.score() + 0.2 * review.sentiment
+        rescaled_score = (review.score() * 9) / 10
+        review.overall_rating = rescaled_score + review.sentiment
     total = sum(review.overall_rating for review in reviews)
     avg = total / len(reviews)
     return avg

@@ -85,6 +85,8 @@ def add_single_artist(artist):
     conn.commit()
     cur.close()
     conn.close()
+    print("Finished adding {}".format(artist))
+    return artist_json['s_id']
 
 
 if __name__ == '__main__':
@@ -98,8 +100,10 @@ if __name__ == '__main__':
         print("Beginning population with batch {}/{}".format(i, n))
         try:
             populate_db(batch)
-        except Exception:
+        except Exception as e:
             failed_artists.extend(batch)
+            print(e)
             print("Failed batch {} containing {}".format(i, batch))
-    print("Failed to add the following artists to the db:\n{}".format(failed_artists))
+    if len(failed_artists) > 0:
+        print("Failed to add the following artists to the db:\n{}".format(failed_artists))
     # add_single_artist(artists[1])

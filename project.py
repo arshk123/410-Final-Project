@@ -1,15 +1,17 @@
 """The flasks server that runs our project."""
-from flask import Flask, render_template, session, redirect, url_for, request, jsonify
+from flask import Flask, abort, render_template, session, redirect, url_for, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 import psycopg2
+import os
 # import credentials
 import album_discovery
-import artist_rating
+from populate_db import add_single_artist
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'
 
 sp = album_discovery.sp
+DATABASE_URL = os.environ['DATABASE_URL']
 
 
 @app.route('/')
@@ -38,12 +40,12 @@ def login():
     return render_template('index.html'), 400
 
 
-
 @app.route('/logout', methods=['POST'])
 def logout():
-    """Logout method"""
+    """Logout method."""
     session.pop('email')
     return url_for('index')
+
 
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -85,11 +87,12 @@ def get_user_recommendations(id):
 
 @app.route('/artist/<id>')
 def artist(id):
-    """Endpoint for artist page"""
+    """Endpoint for artist page."""
     artist = sp.artist(id)
     albums = album_discovery.get_artist_albums(artist, full_album_info=True)
 
     return render_template("artist.html", artist=artist, albums=albums, email=session['email'])
+
 
 @app.route('/new_artist', methods=['GET', 'POST'])
 def new_artist():
@@ -111,17 +114,21 @@ def autocomplete():
 def handledata():
     """Used to handle an artist request."""
     artist_name = request.form['artist_name']
-    artist_rate = artist_rating.get_rating_from_query(artist_name)
-    print(artist_name, artist_rate)
-    return jsonify(artist=artist_name, rating=artist_rate)
+    try:
+        s_id = add_single_artist(artist_name)
+    except Exception as e:
+        print(e)
+        abort(418)
+
+    return jsonify(redirect_url='/artist/{}'.format(s_id))
 
 
 def connect_to_db():
     """Test that the postegres database is setup and working properly."""
-    dbname = 'musicrater'
-    user = credentials.login['user']
-    password = credentials.login['password']
-    conn = psycopg2.connect(dbname=dbname, user=user, password=password)
+    # dbname = 'musicrater'
+    # user = credentials.login['user']
+    # password = credentials.login['password']
+    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
     # cur = conn.cursor()
     # cur.execute("SELECT * FROM test")
     # print(cur.fetchall())
