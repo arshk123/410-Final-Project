@@ -120,7 +120,6 @@ def add_single_artist_from_json(artist_json):
         print("Finished adding {}".format(artist))
         artist_queue.remove(artist_json)
         return artist_json['id']
->>>>>>> heroku-deploy
 
 
 if __name__ == '__main__':
