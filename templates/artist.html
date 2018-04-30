@@ -64,16 +64,29 @@
                 </div>
                 <div class="col">
                     <h1>Rate this artist</h1>
-                    <button id="rate1" class="btn btn-lg btn-dark rate">1</button>
-                    <button id="rate2" class="btn btn-lg btn-dark rate">2</button>
-                    <button id="rate3" class="btn btn-lg btn-dark rate">3</button>
-                    <button id="rate4" class="btn btn-lg btn-dark rate">4</button>
-                    <button id="rate5" class="btn btn-lg btn-dark rate">5</button>
-                    <button id="rate6" class="btn btn-lg btn-dark rate">6</button>
-                    <button id="rate7" class="btn btn-lg btn-dark rate">7</button>
-                    <button id="rate8" class="btn btn-lg btn-dark rate">8</button>
-                    <button id="rate9" class="btn btn-lg btn-dark rate">9</button>
-                    <button id="rate10" class="btn btn-lg btn-dark rate">10</button>
+                    {% if user_rating %}
+                        {% for i in range(1, 11) %}
+                            {% if user_rating == i %}
+                                <button id="{{s_id}} {{i}}" class="btn btn-lg btn-dark disabled rate">{{i}}</button>
+                            {% else %}
+                                <button id="{{s_id}} {{i}}" class="btn btn-lg btn-dark rate">{{i}}</button>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        {% for i in range(1, 11) %}
+                            <button id="{{s_id}} {{i}}" class="btn btn-lg btn-dark rate">{{i}}</button>
+                        {% endfor %}
+                    {% endif %}
+                    <!-- <button id="{{s_id}} 1" class="btn btn-lg btn-dark rate">1</button>
+                    <button id="{{s_id}} 2" class="btn btn-lg btn-dark rate">2</button>
+                    <button id="{{s_id}} 3" class="btn btn-lg btn-dark rate">3</button>
+                    <button id="{{s_id}} 4" class="btn btn-lg btn-dark rate">4</button>
+                    <button id="{{s_id}} 5" class="btn btn-lg btn-dark rate">5</button>
+                    <button id="{{s_id}} 6" class="btn btn-lg btn-dark rate">6</button>
+                    <button id="{{s_id}} 7" class="btn btn-lg btn-dark rate">7</button>
+                    <button id="{{s_id}} 8" class="btn btn-lg btn-dark rate">8</button>
+                    <button id="{{s_id}} 9" class="btn btn-lg btn-dark rate">9</button>
+                    <button id="{{s_id}} 10" class="btn btn-lg btn-dark rate">10</button> -->
 
                 </div>
             </div>

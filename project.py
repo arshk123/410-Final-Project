@@ -27,7 +27,6 @@ def index():
 @app.route('/login', methods=['POST'])
 def login():
     """Login method."""
-    session['email'] = request.form['email']
     conn = connect_to_db()
     cur = conn.cursor()
     cur.execute('SELECT * FROM users WHERE email=%s', [request.form['email']])
@@ -40,6 +39,8 @@ def login():
         password_entered = request.form['password']
 
         if check_password_hash(db_password, password_entered):
+            session['email'] = request.form['email']
+            session['id'] = rows[0][3]
             return redirect(url_for('user'))
 
     return render_template('index.html'), 400
@@ -95,6 +96,8 @@ def get_user_recommendations(u_id):
 @app.route('/artist/<s_id>')
 def artist(s_id):
     """Endpoint for artist page."""
+
+
     artist = sp.artist(s_id)
     albums = album_discovery.get_artist_albums(artist, full_album_info=True)
     conn = connect_to_db()
@@ -122,7 +125,31 @@ def artist(s_id):
         rating = rating_row[0]
         lastupdated = {'date': rating_row[1].strftime("%Y-%m-%d"), 'time': rating_row[1].strftime("%H:%M")}
 
-    return render_template("artist.html", artist=artist, albums=albums, email=session['email'], rating=rating, lastupdated=lastupdated)
+
+    user_rating = get_user_rating(session['id'], s_id)
+
+    return render_template("artist.html", artist=artist, albums=albums, email=session['email'], rating=rating, lastupdated=lastupdated, s_id=s_id, user_rating=user_rating)
+
+
+def get_user_rating(user_id, artist_id):
+    conn = connect_to_db()
+    cur = conn.cursor()
+
+    cur.execute('SELECT id FROM artists WHERE s_id=%s', [artist_id])
+    user_ids = cur.fetchall()
+    if len(user_ids) == 0:
+        return None #artist is not yet in database so return
+
+
+    id = user_ids[0][0]
+
+
+    cur.execute('SELECT rating FROM reviews WHERE u_id=%s AND a_id=%s', [user_id, id])
+    rows = cur.fetchall()
+    if len(rows) == 0:
+        return None
+    else:
+        return rows[0][0]
 
 
 @app.route('/new_artist', methods=['GET', 'POST'])
@@ -161,6 +188,28 @@ def handledata():
 
     return jsonify(redirect_url='/artist/{}'.format(artist_json['id']))
 
+@app.route('/artist/rate/<s_id>', methods=['GET','POST'])
+def rate_artist(s_id):
+    rating = request.form['rating']
+
+    conn = connect_to_db()
+    cur = conn.cursor()
+
+    cur.execute('SELECT * FROM artists WHERE s_id=%s', [s_id])
+    rows = cur.fetchall()
+    artist_id = rows[0][1]
+
+    cur.execute('SELECT * FROM reviews WHERE u_id=%s and a_id=%s', [session['id'], artist_id])
+    rows = cur.fetchall()
+    if len(rows) == 0:
+        cur.execute('INSERT INTO reviews (u_id, a_id, rating) VALUES (%s, %s, %s)', [session['id'], artist_id, rating])
+    else:
+        cur.execute('UPDATE reviews SET rating=%s WHERE u_id=%s and a_id=%s', [rating, session['id'], artist_id])
+
+    conn.commit()
+    conn.close()
+
+    return jsonify(success=True), 200
 
 def connect_to_db():
     """Test that the postegres database is setup and working properly."""
