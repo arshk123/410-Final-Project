@@ -7,7 +7,7 @@ import os
 import threading
 import album_discovery
 from populate_db import add_single_artist_from_json, artist_queue
-import recommender
+# import recommender
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'
@@ -116,21 +116,21 @@ def get_user_recommendations(u_id):
     """Get recommendations based on a user's id."""
     # print(artist_rating.get_rating_from_query('Drake'))
 
-    conn = connect_to_db()
-    cur = conn.cursor()
-
-    cur.execute('SELECT a_id, u_id, rating FROM reviews')
-    rows = cur.fetchall()
-    artist_ids = [i[0] for i in rows]
-    user_ids = [i[1] for i in rows]
-    ratings = [i[2] for i in rows]
-
-    data = {'itemID': artist_ids,
-            'userID': user_ids,
-            'ratings': ratings }
-
-    rec = recommender.Recommender()
-    rec.setup(data)
+    # conn = connect_to_db()
+    # cur = conn.cursor()
+    #
+    # cur.execute('SELECT a_id, u_id, rating FROM reviews')
+    # rows = cur.fetchall()
+    # artist_ids = [i[0] for i in rows]
+    # user_ids = [i[1] for i in rows]
+    # ratings = [i[2] for i in rows]
+    #
+    # data = {'itemID': artist_ids,
+    #         'userID': user_ids,
+    #         'ratings': ratings }
+    #
+    # rec = recommender.Recommender()
+    # rec.setup(data)
 
     # return json object of hard coded artist for now
     return jsonify([sp.artist('4xRYI6VqpkE3UwrDrAZL8L'), sp.artist('3TVXtAsR1Inumwj472S9r4'),
