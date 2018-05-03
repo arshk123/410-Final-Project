@@ -66,9 +66,10 @@ def logout():
 def search():
     """Search for an artist."""
     print("in search function")
+    print(request.args['navsearch'])
     conn = connect_to_db()
     cur = conn.cursor()
-    query = unquote_plus(request.form['navsearch'])
+    query = unquote_plus(request.args['navsearch'])
     query = query.lower()
     query = '%{}%'.format(query)
     print(query)
