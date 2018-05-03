@@ -65,14 +65,11 @@ def logout():
 @app.route('/search')
 def search():
     """Search for an artist."""
-    print("in search function")
-    print(request.args['navsearch'])
     conn = connect_to_db()
     cur = conn.cursor()
     query = unquote_plus(request.args['navsearch'])
     query = query.lower()
     query = '%{}%'.format(query)
-    print(query)
     cur.execute('SELECT name, s_id FROM artists WHERE LOWER(name) LIKE %s;', (query,))
     results = cur.fetchall()
     cur.close()
@@ -228,7 +225,6 @@ def navsearch():
 def autocomplete():
     """Autocomplete endpoint used for adding a new artist."""
     search = request.args.get('q')
-    print(search)
     artist_list = album_discovery.get_artist_list(search)
     results = []
     if artist_list:
