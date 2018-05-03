@@ -8,8 +8,15 @@ import random
 import pandas as pd
 
 sample_artists = [ 'Goldlink', 'Cage the elephant', 'DNCE', 'T-pain', 'Kings of Leon', 'Hurley Mower', 'Shallou', 'Khalid', 'Ramin Djawadi', 'Ed Sheeran', 'Kid Cudi', 'Vengaboys', 'Calvin Harris', 'The Weekend', 'Drake', 'Lil Dicky', 'Bowling for Soup', 'XXXTentacion', 'Post Malone', 'A$ap rocky', 'Illenium', 'Logic']
-scm = SpotifyClientCredentials(client_id=spotify_client_id, client_secret=spotify_client_secret)
-sp = spotipy.Spotify(client_credentials_manager=scm)
+
+
+spotify_client_id = os.environ.get('SPOTIFY_CLIENT_ID', '')
+spotify_client_secret = os.environ.get('SPOTIFY_CLIENT_SECRET', '')
+spotify_credentials_manager = SpotifyClientCredentials(client_id=spotify_client_id,
+                                                       client_secret=spotify_client_secret)
+sp = spotipy.Spotify(client_credentials_manager=spotify_credentials_manager)
+
+
 
 class Recommender:
     def __init__(self, pg=None, testing=False):
