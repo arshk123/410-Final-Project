@@ -1,6 +1,5 @@
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
-from api_keys import spotify_client_id, spotify_client_secret
 from surprise import evaluate, Dataset, Reader
 from surprise import KNNBasic
 from collections import defaultdict
