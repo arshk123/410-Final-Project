@@ -10,7 +10,7 @@
             <h1>No Artists Found</h1>
             </div>
             <div class="row">
-                <p>We couldn't find any results for your search. You can try adding an artist from the "Request New Artists" page.</p>
+                <p>We couldn't find any results for your search. You can try adding an artist from the <a href="{{url_for('new_artist')}}">"Request New Artists" page.</a></p>
             {% endif %}
         </div>
         {% if artists %}
