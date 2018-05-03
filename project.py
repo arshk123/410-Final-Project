@@ -1,10 +1,10 @@
 """The flasks server that runs our project."""
 from flask import Flask, abort, render_template, session, redirect, url_for, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
+from urllib.parse import unquote_plus
 import psycopg2
 import os
 import threading
-# import credentials
 import album_discovery
 from populate_db import add_single_artist_from_json, artist_queue
 import recommender
@@ -25,6 +25,12 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/about')
+def about():
+    """Endpoint for the about page."""
+    return render_template('about.html')
+
+
 @app.route('/login', methods=['POST'])
 def login():
     """Login method."""
@@ -32,16 +38,17 @@ def login():
     cur = conn.cursor()
     cur.execute('SELECT * FROM users WHERE email=%s', [request.form['email']])
 
-    rows = cur.fetchall()
+    row = cur.fetchone()
     cur.close()
     conn.close()
-    if len(rows) != 0:
-        db_password = rows[0][1]
+    if row:
+        db_password = row[1]
         password_entered = request.form['password']
 
         if check_password_hash(db_password, password_entered):
             session['email'] = request.form['email']
-            session['id'] = rows[0][3]
+            session['id'] = row[3]
+            session['username'] = row[2]
             return redirect(url_for('user'))
 
     return render_template('index.html'), 400
@@ -51,7 +58,27 @@ def login():
 def logout():
     """Logout method."""
     session.pop('email')
+    session.pop('username')
     return url_for('index')
+
+
+@app.route('/search')
+def search():
+    """Search for an artist."""
+    conn = connect_to_db()
+    cur = conn.cursor()
+    query = unquote_plus(request.form['navsearch'])
+    query = query.lower()
+    query = '%{}%'.format(query)
+    cur.execute('SELECT name, s_id FROM artists WHERE LOWER(name) LIKE %s;', (query,))
+    results = cur.fetchall()
+    cur.close()
+    conn.close()
+    result_dicts = []
+    if results is not None:
+        for result in results:
+            result_dicts.append({'name': result[0], 'id': result[1]})
+    return render_template('search.html', artists=result_dicts)
 
 
 @app.route('/signup', methods=['POST'])
@@ -68,6 +95,7 @@ def signup():
     hashed_password = generate_password_hash(request.form['password'])
     cur.execute('INSERT INTO users VALUES (%s, %s, %s)', [request.form['email'], hashed_password, request.form['username']])
     session['email'] = request.form['email']
+    session['username'] = request.form['email']
     conn.commit()
     conn.close()
 
@@ -113,8 +141,6 @@ def get_user_recommendations(u_id):
 @app.route('/artist/<s_id>')
 def artist(s_id):
     """Endpoint for artist page."""
-
-
     artist = sp.artist(s_id)
     albums = album_discovery.get_artist_albums(artist, full_album_info=True)
     conn = connect_to_db()
@@ -123,6 +149,7 @@ def artist(s_id):
     rating_row = cur.fetchone()
     cur.close()
     conn.close()
+
     rating = None
     lastupdated = None
     if rating_row is None:
@@ -142,31 +169,30 @@ def artist(s_id):
         rating = rating_row[0]
         lastupdated = {'date': rating_row[1].strftime("%Y-%m-%d"), 'time': rating_row[1].strftime("%H:%M")}
 
+    user_rating = None
+    if 'id' in session:
+        user_rating = get_user_rating(session['id'], s_id)
 
-    user_rating = get_user_rating(session['id'], s_id)
-
-    return render_template("artist.html", artist=artist, albums=albums, email=session['email'], rating=rating, lastupdated=lastupdated, s_id=s_id, user_rating=user_rating)
+    return render_template("artist.html", artist=artist, albums=albums, rating=rating, lastupdated=lastupdated, s_id=s_id, user_rating=user_rating)
 
 
 def get_user_rating(user_id, artist_id):
+    """Get a user rating from the db."""
     conn = connect_to_db()
     cur = conn.cursor()
 
     cur.execute('SELECT id FROM artists WHERE s_id=%s', [artist_id])
-    user_ids = cur.fetchall()
-    if len(user_ids) == 0:
-        return None #artist is not yet in database so return
+    row = cur.fetchone()
+    if not row:
+        return None  # artist is not yet in database so return
 
+    artist_id = row[0]
 
-    id = user_ids[0][0]
-
-
-    cur.execute('SELECT rating FROM reviews WHERE u_id=%s AND a_id=%s', [user_id, id])
-    rows = cur.fetchall()
-    if len(rows) == 0:
+    cur.execute('SELECT rating FROM reviews WHERE u_id=%s AND a_id=%s', [user_id, artist_id])
+    row = cur.fetchone()
+    if not row:
         return None
-    else:
-        return rows[0][0]
+    return row[0]
 
 
 @app.route('/new_artist', methods=['GET', 'POST'])
@@ -175,25 +201,44 @@ def new_artist():
     return render_template("new_artist.html")
 
 
+@app.route('/navsearch', methods=['GET'])
+def navsearch():
+    """Autocomplete endpoint used for navbar search."""
+    search = request.args.get('q')
+    search = search.lower()
+    search = '%{}%'.format(search)
+    print(search)
+
+    conn = connect_to_db()
+    cur = conn.cursor()
+    cur.execute('SELECT name, s_id FROM artists WHERE LOWER(name) LIKE %s;', (search,))
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    results = []
+    if rows:
+        results = [{'label': row[0], 'value': row[1]} for row in rows]
+    return jsonify(matching_results=results)
+
+
 @app.route('/autocomplete', methods=['GET'])
 def autocomplete():
     """Autocomplete endpoint used for adding a new artist."""
     search = request.args.get('q')
     print(search)
     artist_list = album_discovery.get_artist_list(search)
-    results = [artist['name'] for artist in artist_list]
+    results = []
+    if artist_list:
+        results = [{'label': artist['name'], 'value': artist['id']} for artist in artist_list]
     return jsonify(matching_results=results)
 
 
 @app.route('/handledata/', methods=['POST'])
 def handledata():
     """Used to handle an artist request."""
-    artist_name = request.form['artist_name']
-    artist_list = album_discovery.get_artist_list(artist_name)
-    if not artist_list:
-        print("Couldn't find artist {}".format(artist_name))
-        abort(418)
-    artist_json = artist_list[0]
+    s_id = request.form['s_id']
+    artist_json = sp.artist(s_id)
     try:
         if artist_json not in artist_queue:
             print("Adding {} to the queue".format(artist_json['name']))
@@ -205,8 +250,10 @@ def handledata():
 
     return jsonify(redirect_url='/artist/{}'.format(artist_json['id']))
 
-@app.route('/artist/rate/<s_id>', methods=['GET','POST'])
+
+@app.route('/artist/rate/<s_id>', methods=['GET', 'POST'])
 def rate_artist(s_id):
+    """Submit a rating for the artist."""
     rating = request.form['rating']
 
     conn = connect_to_db()
@@ -228,14 +275,8 @@ def rate_artist(s_id):
 
     return jsonify(success=True), 200
 
+
 def connect_to_db():
-    """Test that the postegres database is setup and working properly."""
-    # dbname = 'musicrater'
-    # user = credentials.login['user']
-    # password = credentials.login['password']
+    """Create a connection to the DB."""
     conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-    # cur = conn.cursor()
-    # cur.execute("SELECT * FROM test")
-    # print(cur.fetchall())
-    # cur.close()
     return conn

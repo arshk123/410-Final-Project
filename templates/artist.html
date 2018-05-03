@@ -1,144 +1,83 @@
-<html>
-    <head>
-        <title>CS 410 Final Project</title>
-        <link rel="stylesheet" href="//stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
-        <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
-        <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
-        <script src="//stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
-        <script type="text/javascript" src="{{url_for('static', filename='signout.js')}}"></script>
-        <script type="text/javascript" src="{{url_for('static', filename='artist.js')}}"></script>
-    </head>
-    <body class="bg-light">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <span class="navbar-brand mb-0 h1 text-light">Music Rater ♪</span>
-            <div class="collapse navbar-collapse" id="navLinks">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{url_for('user')}}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{url_for('new_artist')}}">Request New Artist</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="col-4">
-                <form class="form-inline my-2 my-lg-0">
-                    <div class="form-group">
-                        <input class="form-control" name="autocomplete" type="text" id="autocomplete" placeholder="Search for artists" aria-label="Search"/>
-                        <!-- <button type="submit" class="btn btn-light my-2 my-sm-0">Search</button> -->
-                    </div>
-                </form>
-            </div>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarUserInfo">
-                <span class="navbar-text text-light">Signed in as {{ email }} </span>
-                <button class="btn btn-outline-danger ml-2" id="signOut">Sign Out</button>
-            </div>
-        </nav>
-        <div class="container">
-            <div class="row">
-                <h1 class="display-3">{{artist['name']}}</h1><h1 class="mt-4 ml-2"><span class="badge badge-dark">{% if rating is number %}{{ rating|round(1) }}{% else %}-{% endif %}</span></h1>
-            </div>
-            <div class="row">
-                <div class="col">
-                    {% if rating is string %}
-                    <p>{{ rating }}</p>
-                    {% endif %}
-                    <img width="350" height="350" src="{{artist['images'][0]['url']}}" class="img-thumbnail float-none">
-                    {% if lastupdated is not none %}
-                    <p>This artist's rating was last updated on {{ lastupdated['date'] }} at {{ lastupdated['time'] }}.</p>
-                    {% endif %}
-                    <p>
-                        <b>Genres:</b>
-                        {% for genre in artist['genres']%}
-                            {% if loop.index == artist['genres']|length %}
-                                <b>{{genre}}</b>
-                            {% else %}
-                                <b>{{genre}},</b>
-                            {% endif %}
-                        {% endfor %}
-                    </p>
-                </div>
-                <div class="col">
-                    <h1>Rate this artist</h1>
-                    {% if user_rating %}
-                        {% for i in range(1, 11) %}
-                            {% if user_rating == i %}
-                                <button id="{{s_id}} {{i}}" class="btn btn-lg btn-dark disabled rate">{{i}}</button>
-                            {% else %}
-                                <button id="{{s_id}} {{i}}" class="btn btn-lg btn-dark rate">{{i}}</button>
-                            {% endif %}
-                        {% endfor %}
-                    {% else %}
-                        {% for i in range(1, 11) %}
-                            <button id="{{s_id}} {{i}}" class="btn btn-lg btn-dark rate">{{i}}</button>
-                        {% endfor %}
-                    {% endif %}
-                    <!-- <button id="{{s_id}} 1" class="btn btn-lg btn-dark rate">1</button>
-                    <button id="{{s_id}} 2" class="btn btn-lg btn-dark rate">2</button>
-                    <button id="{{s_id}} 3" class="btn btn-lg btn-dark rate">3</button>
-                    <button id="{{s_id}} 4" class="btn btn-lg btn-dark rate">4</button>
-                    <button id="{{s_id}} 5" class="btn btn-lg btn-dark rate">5</button>
-                    <button id="{{s_id}} 6" class="btn btn-lg btn-dark rate">6</button>
-                    <button id="{{s_id}} 7" class="btn btn-lg btn-dark rate">7</button>
-                    <button id="{{s_id}} 8" class="btn btn-lg btn-dark rate">8</button>
-                    <button id="{{s_id}} 9" class="btn btn-lg btn-dark rate">9</button>
-                    <button id="{{s_id}} 10" class="btn btn-lg btn-dark rate">10</button> -->
+{% extends "base.html" %}
+{% block title %}{{ artist['name'] }}{% endblock %}
 
-                </div>
-            </div>
-                <div class="row">
+{% block head %}
+    {{ super() }}
+    <script type="text/javascript" src="{{url_for('static', filename='artist.js')}}"></script>
+{% endblock %}
 
-                <div class="col">
-                    <h3>Albums</h3>
-                    <div class="row">
-                    {% for album in albums %}
-                        {% if loop.index-1 % 3 == 0 %}
-                            </div>
-                            <div class="row">
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <h1 class="display-3">{{artist['name']}}</h1><h1 class="mt-4 ml-2"><span class="badge badge-dark">{% if rating is number %}{{ rating|round(1) }}{% else %}-{% endif %}</span></h1>
+        </div>
+        <div class="row">
+            <div class="col">
+                {% if rating is string %}
+                <p>{{ rating }}</p>
+                {% endif %}
+                <img width="350" height="350" src="{{artist['images'][0]['url']}}" class="img-thumbnail float-none">
+                {% if lastupdated %}
+                <p>This artist's rating was last updated on {{ lastupdated['date'] }} at {{ lastupdated['time'] }}.</p>
+                {% endif %}
+                <p>
+                    <b>Genres:</b>
+                    {% for genre in artist['genres']%}
+                        {% if loop.index == artist['genres']|length %}
+                            <b>{{genre}}</b>
+                        {% else %}
+                            <b>{{genre}},</b>
                         {% endif %}
-                        <div class="col">
-                                <img style="width:15rem; height:15rem" class="rounded-circle" src="{{album['images'][0]['url']}}"/>
-                                <div class="card-body">
-                                    <h5>{{album['name']}}</h5>
-                                    <p class="card-text">
-                                        Released <br />{{album['release_date']}}
-                                    </p>
-                                </div>
-                        </div>
                     {% endfor %}
-                </div>
+                </p>
+            </div>
+            {% if session['username'] %}
+            <div class="col">
+                <h1>Rate this artist</h1>
+                {% if user_rating %}
+                    {% for i in range(1, 11) %}
+                        {% if user_rating == i %}
+                            <button id="{{s_id}} {{i}}" class="btn btn-lg btn-dark disabled rate">{{i}}</button>
+                        {% else %}
+                            <button id="{{s_id}} {{i}}" class="btn btn-lg btn-dark rate">{{i}}</button>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    {% for i in range(1, 11) %}
+                        <button id="{{s_id}} {{i}}" class="btn btn-lg btn-dark rate">{{i}}</button>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="col">
+                <h1>Rate this artist.</h1>
+                {% for i in range(1, 11) %}
+                    <button id="{{s_id}} {{i}}" class="btn btn-lg btn-dark disabled rate">{{i}}</button>
+                {% endfor %}
+                <p>Please log in to rate artists and get recommendations.</p>
+            </div>
+            {% endif %}
+        </div>
+        <div class="row">
+            <div class="col">
+                <h3>Albums</h3>
+                <div class="row">
+                {% for album in albums %}
+                    {% if loop.index-1 % 3 == 0 %}
+                        </div>
+                        <div class="row">
+                    {% endif %}
+                    <div class="col">
+                            <img style="width:15rem; height:15rem" class="rounded-circle" src="{{album['images'][0]['url']}}"/>
+                            <div class="card-body">
+                                <h5>{{album['name']}}</h5>
+                                <p class="card-text">
+                                    Released <br />{{album['release_date']}}
+                                </p>
+                            </div>
+                    </div>
+                {% endfor %}
             </div>
         </div>
-    </body>
-
-<script>
-$(function() {
-    $("#autocomplete").autocomplete({
-        source:function(request, response) {
-            $.getJSON("{{url_for('autocomplete')}}",{
-                q: request.term, // in flask, "q" will be the argument to look for using request.args
-            }, function(data) {
-                response(data.matching_results); // matching_results from jsonify
-            });
-        },
-        minLength: 3,
-        select: function(event, ui) {
-            $.ajax({
-                type: 'POST',
-                dataType: 'json',
-                data: {artist_name: ui.item.value},
-                url: '/handledata/',
-                success: function(response){
-                    console.log(response)
-                    window.location.replace(response.redirect_url);
-                }
-            });
-        }
-    });
-})
-</script>
-</html>
+    </div>
+{% endblock %}
