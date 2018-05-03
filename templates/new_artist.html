@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ Request New Artist }}{% endblock %}
+{% block title %}Request New Artist{% endblock %}
 
 {% block navbar_items %}
     <li class="nav-item">
@@ -39,7 +39,7 @@
                 $.ajax({
                     type: 'POST',
                     dataType: 'json',
-                    data: {artist_name: ui.item.value},
+                    data: {s_id: ui.item.value},
                     url: '/handledata/',
                     success: function(response){
                         console.log(response)

@@ -42,8 +42,8 @@
             <div class="col-4">
                 <form class="form-inline my-2 my-lg-0" id="searchForm" action="/search" method="get">
                     <div class="form-group">
-                        <input class="form-control" name="q" type="search" id="q" placeholder="Search for artists" aria-label="Search"/>
-                        <button type="submit" class="btn btn-light my-2 my-sm-0">Search</button>
+                        <input class="form-control" name="navsearch" type="text" id="navsearch" placeholder="Search for artists" aria-label="Search"/>
+                        {# <button type="submit" class="btn btn-light my-2 my-sm-0">Search</button> #}
                     </div>
                 </form>
             </div>
@@ -68,5 +68,22 @@
     </body>
 
     {% block scripts %}
+        <script type="text/javascript">
+        $(function() {
+            $("#navsearch").autocomplete({
+                source:function(request, response) {
+                    $.getJSON("{{url_for('navsearch')}}",{
+                        q: request.term, // in flask, "q" will be the argument to look for using request.args
+                    }, function(data) {
+                        response(data.matching_results); // matching_results from jsonify
+                    });
+                },
+                minLength: 3,
+                select: function(event, ui) {
+                    window.location.replace("/artist/" + ui.item.value);
+                }
+            });
+        })
+        </script>
     {% endblock %}
 </html>

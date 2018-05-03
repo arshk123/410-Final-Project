@@ -165,18 +165,17 @@ def get_user_rating(user_id, artist_id):
     cur = conn.cursor()
 
     cur.execute('SELECT id FROM artists WHERE s_id=%s', [artist_id])
-    user_ids = cur.fetchall()
-    if len(user_ids) == 0:
+    row = cur.fetchone()
+    if not row:
         return None  # artist is not yet in database so return
 
-    id = user_ids[0][0]
+    artist_id = row[0]
 
-    cur.execute('SELECT rating FROM reviews WHERE u_id=%s AND a_id=%s', [user_id, id])
-    rows = cur.fetchall()
-    if len(rows) == 0:
+    cur.execute('SELECT rating FROM reviews WHERE u_id=%s AND a_id=%s', [user_id, artist_id])
+    row = cur.fetchone()
+    if not row:
         return None
-    else:
-        return rows[0][0]
+    return row[0]
 
 
 @app.route('/new_artist', methods=['GET', 'POST'])
@@ -185,25 +184,43 @@ def new_artist():
     return render_template("new_artist.html")
 
 
+@app.route('/navsearch', methods=['GET'])
+def navsearch():
+    """Autocomplete endpoint used for navbar search."""
+    search = request.args.get('q')
+    search = search.lower()
+    search = '%{}%'.format(search)
+
+    conn = connect_to_db()
+    cur = conn.cursor()
+    cur.execute('SELECT name, s_id FROM artists WHERE LOWER(name) LIKE %s;', (search,))
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    results = []
+    if rows:
+        results = [{'label': row[0], 'value': row[1]} for row in rows]
+    return jsonify(matching_results=results)
+
+
 @app.route('/autocomplete', methods=['GET'])
 def autocomplete():
     """Autocomplete endpoint used for adding a new artist."""
     search = request.args.get('q')
     print(search)
     artist_list = album_discovery.get_artist_list(search)
-    results = [artist['name'] for artist in artist_list]
+    results = []
+    if artist_list:
+        results = [{'label': artist['name'], 'value': artist['id']} for artist in artist_list]
     return jsonify(matching_results=results)
 
 
 @app.route('/handledata/', methods=['POST'])
 def handledata():
     """Used to handle an artist request."""
-    artist_name = request.form['artist_name']
-    artist_list = album_discovery.get_artist_list(artist_name)
-    if not artist_list:
-        print("Couldn't find artist {}".format(artist_name))
-        abort(418)
-    artist_json = artist_list[0]
+    s_id = request.form['s_id']
+    artist_json = sp.artist(s_id)
     try:
         if artist_json not in artist_queue:
             print("Adding {} to the queue".format(artist_json['name']))
