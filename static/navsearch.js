@@ -5,6 +5,7 @@ $(document).ready(function(){
             $.getJSON("/navsearch",{
                 q: request.term, // in flask, "q" will be the argument to look for using request.args
             }, function(data) {
+                console.log(data)
                 response(data.matching_results); // matching_results from jsonify
             });
         },
