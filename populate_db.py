@@ -9,9 +9,10 @@ import threading
 from time import sleep
 from urllib.error import URLError
 
-chart_names = ['artist-100']#, 'greatest-hot-100-women-artists',
-               # 'greatest-of-all-time-pop-songs-artists', 'greatest-top-dance-club-artists',
-               # 'greatest-r-b-hip-hop-artists', 'greatest-hot-100-artists']
+chart_names = ['artist-100', 'greatest-hot-100-women-artists',
+               'greatest-of-all-time-pop-songs-artists', 'greatest-top-dance-club-artists',
+               'greatest-r-b-hip-hop-artists', 'greatest-hot-100-artists',
+               'billboard-200', 'hot-100']
 
 DATABASE_URL = os.environ['DATABASE_URL']
 single_artist_lock = threading.Lock()
