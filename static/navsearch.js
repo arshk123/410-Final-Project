@@ -9,9 +9,7 @@ $(document).ready(function(){
         },
         minLength: 3,
         select: function(event, ui) {
-            var s_id = ui.item.value;
-            $("#navsearch").val(ui.item.label);
-            window.location.replace("/artist/" + s_id);
+            window.location.replace("/artist/" + ui.item.value);
         }
     });
 });

@@ -65,6 +65,7 @@ def logout():
 @app.route('/search')
 def search():
     """Search for an artist."""
+    print("in search function")
     conn = connect_to_db()
     cur = conn.cursor()
     query = unquote_plus(request.form['navsearch'])
