@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}About Music Rater{% endblock %}
 
-{% block navbar-items %}
+{% block navbar_items %}
     <li class="nav-item">
         {% if session['username'] %}
         <a class="nav-link" href="{{url_for('user')}}">Home</a>
