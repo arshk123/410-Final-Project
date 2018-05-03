@@ -132,6 +132,7 @@ def artist(s_id):
     rating_row = cur.fetchone()
     cur.close()
     conn.close()
+
     rating = None
     lastupdated = None
     if rating_row is None:

@@ -17,7 +17,7 @@
                 <p>{{ rating }}</p>
                 {% endif %}
                 <img width="350" height="350" src="{{artist['images'][0]['url']}}" class="img-thumbnail float-none">
-                {% if lastupdated is not none %}
+                {% if lastupdated %}
                 <p>This artist's rating was last updated on {{ lastupdated['date'] }} at {{ lastupdated['time'] }}.</p>
                 {% endif %}
                 <p>
