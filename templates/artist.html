@@ -50,7 +50,11 @@
             </div>
             {% else %}
             <div class="col">
-                <h1>Please log in to rate this artist and get recommendations.</h1>
+                <h1>Rate this artist.</h1>
+                {% for i in range(1, 11) %}
+                    <button id="{{s_id}} {{i}}" class="btn btn-lg btn-dark disabled rate">{{i}}</button>
+                {% endfor %}
+                <p>Please log in to rate artists and get recommendations.</p>
             </div>
             {% endif %}
         </div>
