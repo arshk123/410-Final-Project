@@ -24,6 +24,12 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/about')
+def about():
+    """Endpoint for the about page."""
+    return render_template('about.html')
+
+
 @app.route('/login', methods=['POST'])
 def login():
     """Login method."""
@@ -31,16 +37,17 @@ def login():
     cur = conn.cursor()
     cur.execute('SELECT * FROM users WHERE email=%s', [request.form['email']])
 
-    rows = cur.fetchall()
+    row = cur.fetchone()
     cur.close()
     conn.close()
-    if len(rows) != 0:
-        db_password = rows[0][1]
+    if row:
+        db_password = row[1]
         password_entered = request.form['password']
 
         if check_password_hash(db_password, password_entered):
             session['email'] = request.form['email']
-            session['id'] = rows[0][3]
+            session['id'] = row[3]
+            session['username'] = row[2]
             return redirect(url_for('user'))
 
     return render_template('index.html'), 400
@@ -50,7 +57,27 @@ def login():
 def logout():
     """Logout method."""
     session.pop('email')
+    session.pop('username')
     return url_for('index')
+
+
+@app.route('/search', methods=['GET'])
+def search():
+    """Search for an artist."""
+    conn = connect_to_db()
+    cur = conn.cursor()
+    query = request.form['search']
+    query = query.lower()
+    query = '%{}%'.format(query)
+    cur.execute('SELECT name, s_id FROM artists WHERE LOWER(name) LIKE %s;', (query,))
+    results = cur.fetchall()
+    cur.close()
+    conn.close()
+    result_dicts = []
+    if results is not None:
+        for result in results:
+            result_dicts.append({'name': result[0], 'id': result[1]})
+    return render_template('search.html', artists=result_dicts)
 
 
 @app.route('/signup', methods=['POST'])
@@ -67,6 +94,7 @@ def signup():
     hashed_password = generate_password_hash(request.form['password'])
     cur.execute('INSERT INTO users VALUES (%s, %s, %s)', [request.form['email'], hashed_password, request.form['username']])
     session['email'] = request.form['email']
+    session['username'] = request.form['email']
     conn.commit()
     conn.close()
 
@@ -96,8 +124,6 @@ def get_user_recommendations(u_id):
 @app.route('/artist/<s_id>')
 def artist(s_id):
     """Endpoint for artist page."""
-
-
     artist = sp.artist(s_id)
     albums = album_discovery.get_artist_albums(artist, full_album_info=True)
     conn = connect_to_db()
@@ -125,24 +151,24 @@ def artist(s_id):
         rating = rating_row[0]
         lastupdated = {'date': rating_row[1].strftime("%Y-%m-%d"), 'time': rating_row[1].strftime("%H:%M")}
 
+    user_rating = None
+    if 'id' in session:
+        user_rating = get_user_rating(session['id'], s_id)
 
-    user_rating = get_user_rating(session['id'], s_id)
-
-    return render_template("artist.html", artist=artist, albums=albums, email=session['email'], rating=rating, lastupdated=lastupdated, s_id=s_id, user_rating=user_rating)
+    return render_template("artist.html", artist=artist, albums=albums, rating=rating, lastupdated=lastupdated, s_id=s_id, user_rating=user_rating)
 
 
 def get_user_rating(user_id, artist_id):
+    """Get a user rating from the db."""
     conn = connect_to_db()
     cur = conn.cursor()
 
     cur.execute('SELECT id FROM artists WHERE s_id=%s', [artist_id])
     user_ids = cur.fetchall()
     if len(user_ids) == 0:
-        return None #artist is not yet in database so return
-
+        return None  # artist is not yet in database so return
 
     id = user_ids[0][0]
-
 
     cur.execute('SELECT rating FROM reviews WHERE u_id=%s AND a_id=%s', [user_id, id])
     rows = cur.fetchall()
@@ -188,8 +214,10 @@ def handledata():
 
     return jsonify(redirect_url='/artist/{}'.format(artist_json['id']))
 
-@app.route('/artist/rate/<s_id>', methods=['GET','POST'])
+
+@app.route('/artist/rate/<s_id>', methods=['GET', 'POST'])
 def rate_artist(s_id):
+    """Submit a rating for the artist."""
     rating = request.form['rating']
 
     conn = connect_to_db()
@@ -211,14 +239,8 @@ def rate_artist(s_id):
 
     return jsonify(success=True), 200
 
+
 def connect_to_db():
-    """Test that the postegres database is setup and working properly."""
-    # dbname = 'musicrater'
-    # user = credentials.login['user']
-    # password = credentials.login['password']
+    """Create a connection to the DB."""
     conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-    # cur = conn.cursor()
-    # cur.execute("SELECT * FROM test")
-    # print(cur.fetchall())
-    # cur.close()
     return conn
