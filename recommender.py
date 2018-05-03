@@ -90,6 +90,6 @@ data = {
 }
 """
 
-recommender = Recommender()
-data, labels = recommender.buildSampleDataset()
-recommender.setup(data)
+# recommender = Recommender()
+# data, labels = recommender.buildSampleDataset()
+# recommender.setup(data)
