@@ -126,8 +126,7 @@ def add_single_artist_from_json(artist_json):
 
 
 if __name__ == '__main__':
-    # artists = get_artists_from_charts()
-    artists = ['Janelle Monae', 'Anderson .Paak']
+    artists = get_artists_from_charts()
     print("Found {} artists using the billboard API".format(len(artists)))
     batches = get_batches(artists)
     n = len(batches)
