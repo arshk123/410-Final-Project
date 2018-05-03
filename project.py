@@ -1,10 +1,10 @@
 """The flasks server that runs our project."""
 from flask import Flask, abort, render_template, session, redirect, url_for, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
+from urllib.parse import unquote_plus
 import psycopg2
 import os
 import threading
-# import credentials
 import album_discovery
 from populate_db import add_single_artist_from_json, artist_queue
 
@@ -61,12 +61,12 @@ def logout():
     return url_for('index')
 
 
-@app.route('/search', methods=['GET'])
+@app.route('/search')
 def search():
     """Search for an artist."""
     conn = connect_to_db()
     cur = conn.cursor()
-    query = request.form['search']
+    query = unquote_plus(request.form['navsearch'])
     query = query.lower()
     query = '%{}%'.format(query)
     cur.execute('SELECT name, s_id FROM artists WHERE LOWER(name) LIKE %s;', (query,))
@@ -190,6 +190,7 @@ def navsearch():
     search = request.args.get('q')
     search = search.lower()
     search = '%{}%'.format(search)
+    print(search)
 
     conn = connect_to_db()
     cur = conn.cursor()

@@ -72,6 +72,7 @@
         $(function() {
             $("#navsearch").autocomplete({
                 source:function(request, response) {
+                    console.log(request.term)
                     $.getJSON("{{url_for('navsearch')}}",{
                         q: request.term, // in flask, "q" will be the argument to look for using request.args
                     }, function(data) {
