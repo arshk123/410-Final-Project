@@ -70,12 +70,13 @@ def search():
     query = unquote_plus(request.form['navsearch'])
     query = query.lower()
     query = '%{}%'.format(query)
+    print(query)
     cur.execute('SELECT name, s_id FROM artists WHERE LOWER(name) LIKE %s;', (query,))
     results = cur.fetchall()
     cur.close()
     conn.close()
     result_dicts = []
-    if results is not None:
+    if results:
         for result in results:
             result_dicts.append({'name': result[0], 'id': result[1]})
     return render_template('search.html', artists=result_dicts)
@@ -207,7 +208,6 @@ def navsearch():
     search = request.args.get('q')
     search = search.lower()
     search = '%{}%'.format(search)
-    print(search)
 
     conn = connect_to_db()
     cur = conn.cursor()
