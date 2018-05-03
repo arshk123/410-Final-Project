@@ -18,8 +18,15 @@
 {% endblock %}
 
 {% block content %}
-    <div>
-        <input name="autocomplete" type="text" id="autocomplete" class="form-control input-lg"/>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <input name="autocomplete" type="text" id="autocomplete" class="form-control input-lg"/>
+            </div>
+        </div>
+        <div class="row">
+            <p>Due to limitations in the spotify api, we can only autocomplete artist names after the first "whole word" in their name. For example, you would need to at least enter "Kanye" to search for Kanye West, rather than just searching for "Kan".</p>
+        </div>     
     </div>
 {% endblock %}
 
