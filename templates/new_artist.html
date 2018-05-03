@@ -24,6 +24,7 @@
 {% endblock %}
 
 {% block scripts %}
+    {{ super() }}
     <script type="text/javascript">
     $(function() {
         $("#autocomplete").autocomplete({
