@@ -125,8 +125,23 @@ def add_single_artist_from_json(artist_json):
         return artist_json['id']
 
 
+def remove_artists_in_db(artists):
+    """Filter the artists list and remove ones that are already in the db."""
+    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    cur = conn.cursor()
+    cur.execute('SELECT name FROM artists;')
+    rows = cur.fetchall()
+    conn.commit()
+    cur.close()
+    conn.close()
+    db_artists = set(row[0] for row in rows)
+    artists = [artist for artist in artists if artist not in db_artists]
+    return artists
+
+
 if __name__ == '__main__':
     artists = get_artists_from_charts()
+    artists = remove_artists_in_db(artists)
     print("Found {} artists using the billboard API".format(len(artists)))
     batches = get_batches(artists)
     n = len(batches)
