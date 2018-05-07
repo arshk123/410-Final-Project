@@ -146,7 +146,7 @@ def artist(s_id):
     albums = album_discovery.get_artist_albums(artist, full_album_info=True)
     conn = connect_to_db()
     cur = conn.cursor()
-    cur.execute('SELECT review, lastupdated FROM artists WHERE s_id=%s;', (artist['id'],))
+    cur.execute('SELECT review, lastupdated, id FROM artists WHERE s_id=%s;', (artist['id'],))
     rating_row = cur.fetchone()
     cur.close()
     conn.close()
@@ -174,7 +174,11 @@ def artist(s_id):
     if 'id' in session:
         user_rating = get_user_rating(session['id'], s_id)
 
-    return render_template("artist.html", artist=artist, albums=albums, rating=rating, lastupdated=lastupdated, s_id=s_id, user_rating=user_rating)
+    avg_user_rating = 'No Data'
+    if rating_row is not None:
+        avg_user_rating = get_avg_user_rating(rating_row[2])
+
+    return render_template("artist.html", artist=artist, albums=albums, rating=rating, lastupdated=lastupdated, s_id=s_id, user_rating=user_rating, avg_user_rating=avg_user_rating)
 
 
 def get_user_rating(user_id, artist_id):
@@ -195,6 +199,16 @@ def get_user_rating(user_id, artist_id):
         return None
     return row[0]
 
+def get_avg_user_rating(artist_id):
+    """Get the average rating for an artist for all users that have rated that artist"""
+    conn = connect_to_db()
+    cur = conn.cursor()
+
+    cur.execute('SELECT AVG(rating) FROM reviews WHERE a_id=%s', [artist_id])
+    rating = cur.fetchall()[0]
+    conn.close()
+
+    return rating[0]
 
 @app.route('/new_artist', methods=['GET', 'POST'])
 def new_artist():
