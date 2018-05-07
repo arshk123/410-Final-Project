@@ -13,7 +13,7 @@ sp = spotipy.Spotify(client_credentials_manager=scm)
 
 class Recommender:
     def __init__(self, pg=None, testing=False):
-        self.labels = {}
+        self.labels = []
         self.trained = False
         self.pg = pg
         self.testing = testing
@@ -46,9 +46,6 @@ class Recommender:
         print(predictions)
         topPreds = self.top3(predictions)
         print(topPreds)
-
-    def loadData(self):
-        pass
 
     def buildSampleDataset(self, numSamples=10):
         data = {
