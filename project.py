@@ -14,6 +14,7 @@ app.secret_key = 'super_secret_key'
 
 sp = album_discovery.sp
 DATABASE_URL = os.environ['DATABASE_URL']
+running_local = False
 
 
 @app.route('/')
@@ -276,5 +277,8 @@ def rate_artist(s_id):
 
 def connect_to_db():
     """Create a connection to the DB."""
-    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    if running_local:
+        conn = psycopg2.connect(DATABASE_URL)
+    else:
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
     return conn

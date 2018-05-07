@@ -15,6 +15,7 @@ chart_names = ['artist-100', 'greatest-hot-100-women-artists',
                'billboard-200', 'hot-100']
 
 DATABASE_URL = os.environ['DATABASE_URL']
+running_local = False
 single_artist_lock = threading.Lock()
 artist_queue = []
 
@@ -60,7 +61,7 @@ def populate_db(artists):
             artists.append(artist)
             sleep(0.5)
 
-    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    conn = connect_to_db()
     cur = conn.cursor()
     insert_query = 'INSERT INTO artists (name, review, s_id) VALUES (%s, %s, %s) ON CONFLICT (s_id) DO UPDATE SET review=%s, lastupdated=DEFAULT'
     execute_batch(cur, insert_query, rated_artists)
@@ -81,7 +82,7 @@ def add_single_artist(artist):
     rating = artist_rating.get_rating_from_artist(artist_json)
 
     with single_artist_lock:
-        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        conn = connect_to_db()
         cur = conn.cursor()
         if rating > 0:
             vals = (artist_json['name'], rating, artist_json['id'], rating)
@@ -106,7 +107,7 @@ def add_single_artist_from_json(artist_json):
     rating = artist_rating.get_rating_from_artist(artist_json)
 
     with single_artist_lock:
-        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        conn = connect_to_db()
         cur = conn.cursor()
         if rating > 0:
             vals = (artist_json['name'], rating, artist_json['id'], rating)
@@ -127,7 +128,7 @@ def add_single_artist_from_json(artist_json):
 
 def remove_artists_in_db(artists):
     """Filter the artists list and remove ones that are already in the db."""
-    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    conn = connect_to_db()
     cur = conn.cursor()
     cur.execute('SELECT name FROM artists;')
     rows = cur.fetchall()
@@ -137,6 +138,15 @@ def remove_artists_in_db(artists):
     db_artists = set(row[0] for row in rows)
     artists = [artist for artist in artists if artist not in db_artists]
     return artists
+
+
+def connect_to_db():
+    """Create a connection to the DB."""
+    if running_local:
+        conn = psycopg2.connect(DATABASE_URL)
+    else:
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    return conn
 
 
 if __name__ == '__main__':

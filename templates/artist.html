@@ -68,6 +68,7 @@
                         <div class="row">
                     {% endif %}
                     <div class="col">
+                        <a href="{{album['external_urls']['spotify']}}">
                             <img style="width:15rem; height:15rem" class="rounded-circle" src="{{album['images'][0]['url']}}"/>
                             <div class="card-body">
                                 <h5>{{album['name']}}</h5>
@@ -75,6 +76,7 @@
                                     Released <br />{{album['release_date']}}
                                 </p>
                             </div>
+                        </a>
                     </div>
                 {% endfor %}
             </div>
