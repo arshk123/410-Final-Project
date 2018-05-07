@@ -106,3 +106,4 @@ venv.bak/
 api_keys.py
 credentials.py
 .DS_Store
+*.dump
