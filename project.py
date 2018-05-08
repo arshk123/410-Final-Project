@@ -174,11 +174,15 @@ def artist(s_id):
     if 'id' in session:
         user_rating = get_user_rating(session['id'], s_id)
 
-    avg_user_rating = 'No Data'
+    avg_user_rating = '-'
+    user_count = '0'
     if rating_row is not None:
-        avg_user_rating = get_avg_user_rating(rating_row[2])
+        avg_user_rating, user_count = get_avg_user_rating(rating_row[2])
 
-    return render_template("artist.html", artist=artist, albums=albums, rating=rating, lastupdated=lastupdated, s_id=s_id, user_rating=user_rating, avg_user_rating=avg_user_rating)
+    return render_template("artist.html", artist=artist, albums=albums,
+                           rating=rating, lastupdated=lastupdated, s_id=s_id,
+                           user_rating=user_rating, avg_user_rating=avg_user_rating,
+                           user_count=user_count)
 
 
 def get_user_rating(user_id, artist_id):
@@ -197,18 +201,27 @@ def get_user_rating(user_id, artist_id):
     row = cur.fetchone()
     if not row:
         return None
+    cur.close()
+    conn.close()
     return row[0]
 
+
 def get_avg_user_rating(artist_id):
-    """Get the average rating for an artist for all users that have rated that artist"""
+    """Get the average rating for an artist for all users that have rated that artist."""
     conn = connect_to_db()
     cur = conn.cursor()
-
-    cur.execute('SELECT AVG(rating) FROM reviews WHERE a_id=%s', [artist_id])
-    rating = cur.fetchall()[0]
+    cur.execute('SELECT COUNT(rating) FROM reviews WHERE a_id=%s', [artist_id])
+    count = int(cur.fetchone()[0])
+    if count:
+        cur.execute('SELECT AVG(rating) FROM reviews WHERE a_id=%s', [artist_id])
+        rating = cur.fetchone()[0]
+    else:
+        rating = '-'
+    cur.close()
     conn.close()
 
-    return rating[0]
+    return rating, count
+
 
 @app.route('/new_artist', methods=['GET', 'POST'])
 def new_artist():
