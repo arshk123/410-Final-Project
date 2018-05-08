@@ -79,7 +79,7 @@
                             {% if album['images']|length != 0 %}
                                 <img style="width:15rem; height:15rem" class="rounded-circle" src="{{album['images'][0]['url']}}"/>
                             {% else %}
-                                <img style="width:15rem; height:15rem" class="rounded-circle" />
+                                <img style="width:15rem; height:15rem" class="rounded-circle" src="{{url_for('static', filename='album-art-empty.png')}}"/>
                             {% endif %}
 
                             <div class="card-body">
