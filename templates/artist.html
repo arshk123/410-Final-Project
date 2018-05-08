@@ -76,7 +76,12 @@
                     {% endif %}
                     <div class="col">
                         <a href="{{album['external_urls']['spotify']}}" target="_blank">
-                            <img style="width:15rem; height:15rem" class="rounded-circle" src="{{album['images'][0]['url']}}"/>
+                            {% if album['images']|length != 0 %}
+                                <img style="width:15rem; height:15rem" class="rounded-circle" src="{{album['images'][0]['url']}}"/>
+                            {% else %}
+                                <img style="width:15rem; height:15rem" class="rounded-circle" />
+                            {% endif %}
+
                             <div class="card-body">
                                 <h5>{{album['name']}}</h5>
                                 <p class="card-text">
