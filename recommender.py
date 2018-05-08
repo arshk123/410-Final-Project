@@ -1,4 +1,5 @@
 from album_discovery import sp
+import psycopg2
 from surprise import evaluate, Dataset, Reader
 from surprise import KNNBasic
 from collections import defaultdict
@@ -8,6 +9,7 @@ import os
 
 sample_artists = [ 'Goldlink', 'Cage the elephant', 'DNCE', 'T-pain', 'Kings of Leon', 'Hurley Mower', 'Shallou', 'Khalid', 'Ramin Djawadi', 'Ed Sheeran', 'Kid Cudi', 'Vengaboys', 'Calvin Harris', 'The Weekend', 'Drake', 'Lil Dicky', 'Bowling for Soup', 'XXXTentacion', 'Post Malone', 'A$ap rocky', 'Illenium', 'Logic']
 pickle_file = "data.pickle"
+running_local = False
 
 class Recommender:
     def __init__(self, pg=None, testing=False):
@@ -25,7 +27,7 @@ class Recommender:
         # 1. Check if compute bool is False, then Set compute bool to True, if true then do nothing?
 
         # 2. Check if already computed and in db return if so, make sure to flip compute bool to False
-        data = self.checkDB(u_id)
+        computing, data = self.checkDB(u_id)
         if data != []:
             # flip compute bool
             return data
@@ -57,16 +59,26 @@ class Recommender:
 
     def checkDB(self, u_id):
         # called by predict
-        pass
+        conn = connect_to_db()
+        cur = conn.cursor()
+        cur.execute('SELECT recommendations, computing FROM recommendations where u_id=%s;', (u_id,))
+        row = cur.fetchone()
+        if not row:
+            cur.execute('INSERT into recommendations (u_id) VALUES (%s)', (u_id,))
+            cur.close()
+            conn.close()
+            return False, []
+        return row[1], row[0]
+
 
     """ Doesn't work """
-    def top3(self, predictions, topN = 3):
+    def top3(self, predictions, topN=3):
         top_recs = defaultdict(list)
         for uid, iid, true_r, est, _ in predictions:
             top_recs[uid].append((iid, est))
 
         for uid, user_ratings in top_recs.items():
-            user_ratings.sort(key = lambda x: x[1], reverse = True)
+            user_ratings.sort(key=lambda x: x[1], reverse=True)
             top_recs[uid] = user_ratings[:topN]
 
         return top_recs
@@ -131,3 +143,11 @@ data = {
 # recommender = Recommender()
 # data, labels = recommender.buildSampleDataset()
 # recommender.setup(data)
+
+def connect_to_db():
+    """Create a connection to the DB."""
+    if running_local:
+        conn = psycopg2.connect(DATABASE_URL)
+    else:
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    return conn
