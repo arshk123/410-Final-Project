@@ -1,5 +1,4 @@
-import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials
+from album_discovery import sp
 from surprise import evaluate, Dataset, Reader
 from surprise import KNNBasic
 from collections import defaultdict
@@ -8,15 +7,7 @@ import pandas as pd
 import os
 
 sample_artists = [ 'Goldlink', 'Cage the elephant', 'DNCE', 'T-pain', 'Kings of Leon', 'Hurley Mower', 'Shallou', 'Khalid', 'Ramin Djawadi', 'Ed Sheeran', 'Kid Cudi', 'Vengaboys', 'Calvin Harris', 'The Weekend', 'Drake', 'Lil Dicky', 'Bowling for Soup', 'XXXTentacion', 'Post Malone', 'A$ap rocky', 'Illenium', 'Logic']
-
-
-spotify_client_id = os.environ.get('SPOTIFY_CLIENT_ID', '')
-spotify_client_secret = os.environ.get('SPOTIFY_CLIENT_SECRET', '')
-spotify_credentials_manager = SpotifyClientCredentials(client_id=spotify_client_id,
-                                                       client_secret=spotify_client_secret)
-sp = spotipy.Spotify(client_credentials_manager=spotify_credentials_manager)
-
-
+pickle_file = "data.pickle"
 
 class Recommender:
     def __init__(self, pg=None, testing=False):
@@ -24,6 +15,49 @@ class Recommender:
         self.trained = False
         self.pg = pg
         self.testing = testing
+
+    def fit(self):
+        pass
+
+    def predict(self, u_id):
+        # Query recommendations and cross reference with previously reviewed items by u_id, if not empty, then return recs
+        
+        # 1. Check if compute bool is False, then Set compute bool to True, if true then do nothing?
+
+        # 2. Check if already computed and in db return if so, make sure to flip compute bool to False
+        data = self.checkDB(u_id)
+        if data != []:
+            # flip compute bool
+            return data
+
+        # 3. check last updated on pickle_file
+        # 4. If greater than 24 hrs then retrain and predict, return highest avg reviews by users and tailored flag to false
+        # 5. Else predict and return with tailored flag to true
+
+        pass
+
+    def periodicTrain(self):
+        # TODO
+        pass
+
+    def loadPickle(self):
+        # TODO once recommender integrated with db
+        pass
+
+    def unloadPickle(self):
+        # TODO once recommender integrated with db
+        pass
+
+    def pushAllToDB(self, data):
+        pass
+
+    def pushToDB(self, u_id, recommendations):
+        # from periodicTrain
+        pass
+
+    def checkDB(self, u_id):
+        # called by predict
+        pass
 
     """ Doesn't work """
     def top3(self, predictions, topN = 3):
@@ -85,9 +119,6 @@ class Recommender:
         data['userID'] = users
         data['ratings'] = ratings
         return data, labels
-
-    def recommend(self, artist):
-        pass
 
 """
 data = {
