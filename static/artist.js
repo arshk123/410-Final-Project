@@ -7,7 +7,8 @@ $(document).ready(function(){
         var rating = $(this).attr('id').split(' ')[1]
 
         console.log($(this).attr('id'))
-        $.post('/artist/rate/'+spotify_id, {rating: parseInt(rating)});
-        location.reload();
+        $.post('/artist/rate/'+spotify_id, {rating: parseInt(rating)}, function(result){
+            location.reload();
+        });
     });
 });
