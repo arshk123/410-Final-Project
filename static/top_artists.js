@@ -6,7 +6,7 @@ $(document).ready(function(){
             if (data[i].images.length != 0){
                 var recommended_artist_html = `
                 <div class="col-4">
-                    <div class="card" style="width: 20rem height:40rem;">
+                    <div class="card" style="width: 20rem min-height: 40rem;">
                         <img class="card-img-top img-fluid" src="${data[i].images[0].url}" />
                         <div class="card-body">
                             <h5 class="card-title">${data[i].name}</h5>
@@ -21,7 +21,7 @@ $(document).ready(function(){
             else{
                 var recommended_artist_html = `
                 <div class="col-4">
-                    <div class="card" style="width: 20rem  height:40rem;">
+                    <div class="card" style="width: 20rem  min-height: 40rem;">
                         <img class="card-img-top img-fluid" src="/static/album-art-empty.png" />
                         <div class="card-body">
                             <h5 class="card-title">${data[i].name}</h5>
