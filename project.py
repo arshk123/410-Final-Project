@@ -280,6 +280,8 @@ def handledata():
 @app.route('/artist/rate/<s_id>', methods=['GET', 'POST'])
 def rate_artist(s_id):
     """Submit a rating for the artist."""
+    if 'id' not in session:
+        return jsonify(success=False), 400
     rating = request.form['rating']
 
     conn = connect_to_db()
