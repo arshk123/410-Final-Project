@@ -109,7 +109,7 @@ def user():
     if 'email' not in session:
         return render_template('index.html')
 
-    return render_template('user.html', email=session['email'], recs=get_user_recommendations(1))
+    return render_template('user.html', recs=get_user_recommendations(1))
 
 
 @app.route('/user/<u_id>/recommendations')
@@ -137,6 +137,24 @@ def get_user_recommendations(u_id):
     return jsonify([sp.artist('4xRYI6VqpkE3UwrDrAZL8L'), sp.artist('3TVXtAsR1Inumwj472S9r4'),
                     sp.artist('26VFTg2z8YR0cCuwLzESi2'), sp.artist('1Bl6wpkWCQ4KVgnASpvzzA'),
                     sp.artist('536BYVgOnRky0xjsPT96zl'), sp.artist('4kI8Ie27vjvonwaB2ePh8T')])
+
+
+@app.route('/top_artists')
+def top_artists():
+    """Show the user some recommendations."""
+    return render_template('top_artists.html', recs=top_artists_source())
+
+
+@app.route('/top_artists_source')
+def top_artists_source():
+    """Return list of top 25 artists in db by pitchfork review."""
+    conn = connect_to_db()
+    cur = conn.cursor()
+
+    cur.execute('SELECT s_id FROM artists WHERE review IS NOT NULL ORDER BY review DESC LIMIT 25;')
+
+    rows = cur.fetchall()
+    return jsonify([sp.artist(row[0]) for row in rows])
 
 
 @app.route('/artist/<s_id>')
