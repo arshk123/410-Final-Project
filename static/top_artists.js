@@ -31,7 +31,7 @@ $(document).ready(function(){
                     </div>
                 </div>
                 `;
-                $('#row' + row_number).append(recommended_artist_html)
+                $('#card_deck').append(recommended_artist_html)
                 // $('#row' + i).append('<a href="#" class="list-group-item list-group-item-action flex-column align-items-start"><div class="d-felx w-100 justify-content-between"><h5 class="mb-1">'+data[i].name+'</h5></div></a>')
             }
         }
