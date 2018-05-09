@@ -1,7 +1,7 @@
 $(document).ready(function(){
     $.get('/top_artists_source', function(data, status){
         console.log(data)
-        $('.container-fluid').append('<div class="row"><div id="card-deck" class="card-deck"></div></div>');
+        $('.container').append('<div class="row"><div id="card-deck" class="card-deck"></div></div>');
         for (var i = 0; i < data.length; i++ ){
             if (data[i].images.length != 0){
                 var recommended_artist_html = `
