@@ -3,7 +3,7 @@
 
 {% block head %}
     {{ super() }}
-    <script type="text/javascript" src="{{url_for('static', filename='user.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='top_artists.js')}}"></script>
 {% endblock %}
 
 {% block navbar_items %}
@@ -29,7 +29,7 @@
     <div class="container mt-4">
         <div class="row">
             <div class="col">
-                <h1>This page displays the top 25 artists in our database sorted by pitchfork rating.</h1>
+                <h1>Top 25 Artists (by pitchfork rating)</h1>
             </div>
         </div>
     </div>
