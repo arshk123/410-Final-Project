@@ -5,12 +5,14 @@ $(document).ready(function(){
         for (var i = 0; i < data.length; i++ ){
             if (data[i].images.length != 0){
                 var recommended_artist_html = `
-                <div class="card" style="width: 20rem;">
-                    <img class="card-img-top img-fluid" src="${data[i].images[0].url}" />
-                    <div class="card-body">
-                        <h5 class="card-title">${data[i].name}</h5>
-                        <p class="card-text">Genre: ${data[i].genres[0]}</p>
-                        <a href="/artist/${data[i].id}" class="btn btn-primary">View Artist Page</a>
+                <div class="col-4">
+                    <div class="card" style="width: 20rem;">
+                        <img class="card-img-top img-fluid" src="${data[i].images[0].url}" />
+                        <div class="card-body">
+                            <h5 class="card-title">${data[i].name}</h5>
+                            <p class="card-text">Genre: ${data[i].genres[0]}</p>
+                            <a href="/artist/${data[i].id}" class="btn btn-primary">View Artist Page</a>
+                        </div>
                     </div>
                 </div>
                 `;
@@ -18,12 +20,14 @@ $(document).ready(function(){
             }
             else{
                 var recommended_artist_html = `
-                <div class="card" style="width: 20rem;">
-                    <img class="card-img-top img-fluid" src="/static/album-art-empty.png" />
-                    <div class="card-body">
-                        <h5 class="card-title">${data[i].name}</h5>
-                        <p class="card-text">Genre: ${data[i].genres[0]}</p>
-                        <a href="/artist/${data[i].id}" class="btn btn-primary">View Artist Page</a>
+                <div class="col-4">
+                    <div class="card" style="width: 20rem;">
+                        <img class="card-img-top img-fluid" src="/static/album-art-empty.png" />
+                        <div class="card-body">
+                            <h5 class="card-title">${data[i].name}</h5>
+                            <p class="card-text">Genre: ${data[i].genres[0]}</p>
+                            <a href="/artist/${data[i].id}" class="btn btn-primary">View Artist Page</a>
+                        </div>
                     </div>
                 </div>
                 `;
