@@ -8,5 +8,6 @@ $(document).ready(function(){
 
         console.log($(this).attr('id'))
         $.post('/artist/rate/'+spotify_id, {rating: parseInt(rating)});
+        location.reload();
     });
 });
