@@ -5,7 +5,7 @@ $(document).ready(function(){
         for (var i = 0; i < data.length; i++ ){
             if (data[i].images.length != 0){
                 var recommended_artist_html = `
-                <div class="card">
+                <div class="card" style="width: 18rem;">
                     <img class="card-img-top img-fluid" src="${data[i].images[0].url}" />
                     <div class="card-body">
                         <h5 class="card-title">${data[i].name}</h5>
