@@ -6,7 +6,7 @@ $(document).ready(function(){
             if (data[i].images.length != 0){
                 var recommended_artist_html = `
                 <div class="card">
-                    <img class="card-img-top" src="${data[i].images[0].url}" />
+                    <img class="card-img-top img-fluid" src="${data[i].images[0].url}" />
                     <div class="card-body">
                         <h5 class="card-title">${data[i].name}</h5>
                         <p class="card-text">Genre: ${data[i].genres[0]}</p>
@@ -15,19 +15,6 @@ $(document).ready(function(){
                 </div>
                 `;
                 $('#card_deck').append(recommended_artist_html)
-            }
-            else{
-                var recommended_artist_html = `
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">${data[i].name}</h5>
-                        <p class="card-text">Genre: ${data[i].genres[0]}</p>
-                        <a href="/artist/${data[i].id}" class="btn btn-primary">View Artist Page</a>
-                    </div>
-                </div>
-                `;
-                $('#card_deck').append(recommended_artist_html)
-                // $('#row' + i).append('<a href="#" class="list-group-item list-group-item-action flex-column align-items-start"><div class="d-felx w-100 justify-content-between"><h5 class="mb-1">'+data[i].name+'</h5></div></a>')
             }
         }
     });
