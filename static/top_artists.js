@@ -1,11 +1,11 @@
 $(document).ready(function(){
     $.get('/top_artists_source', function(data, status){
         console.log(data)
-        $('.card-deck-wrapper').append('<div id="card_deck" class="card-deck"></div>');
+        $('#next-row').append('<div id="card-deck" class="card-deck"></div>');
         for (var i = 0; i < data.length; i++ ){
             if (data[i].images.length != 0){
                 var recommended_artist_html = `
-                <div class="card" style="width: 18rem;">
+                <div class="card" style="width: 20rem;">
                     <img class="card-img-top img-fluid" src="${data[i].images[0].url}" />
                     <div class="card-body">
                         <h5 class="card-title">${data[i].name}</h5>
@@ -14,11 +14,11 @@ $(document).ready(function(){
                     </div>
                 </div>
                 `;
-                $('#card_deck').append(recommended_artist_html)
+                $('#card-deck').append(recommended_artist_html)
             }
             else{
                 var recommended_artist_html = `
-                <div class="card" style="width: 18rem;">
+                <div class="card" style="width: 20rem;">
                     <img class="card-img-top img-fluid" src="/static/album-art-empty.png" />
                     <div class="card-body">
                         <h5 class="card-title">${data[i].name}</h5>
@@ -27,7 +27,7 @@ $(document).ready(function(){
                     </div>
                 </div>
                 `;
-                $('#card_deck').append(recommended_artist_html)
+                $('#card-deck').append(recommended_artist_html)
                 // $('#row' + i).append('<a href="#" class="list-group-item list-group-item-action flex-column align-items-start"><div class="d-felx w-100 justify-content-between"><h5 class="mb-1">'+data[i].name+'</h5></div></a>')
             }
         }
