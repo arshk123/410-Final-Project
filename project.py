@@ -115,12 +115,12 @@ def user():
     if 'id' not in session:
         return render_template('index.html')
 
-    print("my debug", get_user_recommendations(session['id']))
+    print("my debug", get_user_recommendations(session['id'])[0])
 
     if request.args.get('retrain') == 'True':
-        return render_template('user.html', recs=get_user_recommendations(session['id'], retrain=True))
+        return render_template('user.html', recs=get_user_recommendations(session['id'], retrain=True)[0])
 
-    return render_template('user.html', recs=get_user_recommendations(session['id']))
+    return render_template('user.html', recs=get_user_recommendations(session['id'])[0])
 
 
 @app.route('/user/<u_id>/recommendations')
