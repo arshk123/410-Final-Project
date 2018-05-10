@@ -20,6 +20,7 @@ class Recommender:
         self.pg = pg
         self.testing = testing
         self.knn = None
+        self.periodicTrain()
 
     def fit(self, data):
         df = pd.DataFrame.from_dict(data)
