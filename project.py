@@ -115,7 +115,7 @@ def user():
     if 'id' not in session:
         return render_template('index.html')
 
-    print("my debug", type(request.args.get('retrain')))
+    print("my debug", get_user_recommendations(session['id']))
 
     if request.args.get('retrain') == 'True':
         return render_template('user.html', recs=get_user_recommendations(session['id'], retrain=True))
