@@ -117,7 +117,7 @@ def user():
 
     print("my debug", type(request.args.get('retrain')))
 
-    if request.args.get('retrain'):
+    if request.args.get('retrain') == 'True':
         return render_template('user.html', recs=get_user_recommendations(session['id'], retrain=True))
 
     return render_template('user.html', recs=get_user_recommendations(session['id']))
