@@ -96,8 +96,14 @@ def signup():
 
     hashed_password = generate_password_hash(request.form['password'])
     cur.execute('INSERT INTO users VALUES (%s, %s, %s)', [request.form['email'], hashed_password, request.form['username']])
+    cur.execute('SELECT * FROM users WHERE email=%s', [request.form['email']])
+    row = cur.fetchone()
+
+
     session['email'] = request.form['email']
     session['username'] = request.form['email']
+    session['id'] = row[3]
+
     conn.commit()
     conn.close()
 
