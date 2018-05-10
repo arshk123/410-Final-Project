@@ -32,22 +32,26 @@
                 <h1>Top 25 Artists (by pitchfork rating)</h1>
             </div>
         </div>
-        <div class="card-deck-wrapper">
-            <div class="card-deck">
-                {% for artist in top %}
-                <div class="card" style="width: 20rem">
-                    {% if artist['images'] %}
-                    <img class="card-img-top img-fluid" src="{{ artist['images'][0]['url'] }}" />
-                    {% else %}
-                    <img class="card-img-top img-fluid" src="{{url_for('static', filename='album-art-empty.png')}}" />
-                    {% endif %}
-                    <div class="card-body">
-                        <h5 class="card-title">{{ artist['name'] }}</h5>
-                        <p class="card-text">Genre: {{ artist['genres'][0] }}</p>
-                        <a href="{{ url_for('artist', s_id=artist['id']) }}" class="btn btn-primary">View Artist Page</a>
+        <div class="row">
+            <div class="card-deck-wrapper">
+                <div class="card-deck">
+                    {% for artist in top %}
+                    <div class="col-4">
+                        <div class="card" style="width: 20rem">
+                            {% if artist['images'] %}
+                            <img class="card-img-top img-fluid" src="{{ artist['images'][0]['url'] }}" />
+                            {% else %}
+                            <img class="card-img-top img-fluid" src="{{url_for('static', filename='album-art-empty.png')}}" />
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ artist['name'] }}</h5>
+                                <p class="card-text">Genre: {{ artist['genres'][0] }}</p>
+                                <a href="{{ url_for('artist', s_id=artist['id']) }}" class="btn btn-primary">View Artist Page</a>
+                            </div>
+                        </div>
                     </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
         </div>
     </div>
