@@ -34,7 +34,10 @@ class Recommender:
         self.knn.fit(train)
         return train
 
-    def recommend(self, u_id):
+    def recommend(self, u_id, fullRetrain=False):
+        if fullRetrain:
+            self.periodicTrain()
+            self.recommend(u_id, fullRetrain=False)
         data = self.checkDB(u_id)
         if data != []:
             return data
@@ -171,5 +174,5 @@ data = {
 """
 
 recommender = Recommender()
-# recommender.periodicTrain()
-recommender.recommend(1)
+recommender.periodicTrain()
+# recommender.recommend(7, fullRetrain=True)
