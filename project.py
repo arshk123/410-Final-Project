@@ -142,7 +142,7 @@ def get_user_recommendations(u_id):
 @app.route('/top_artists')
 def top_artists():
     """Show the user some recommendations."""
-    return render_template('top_artists.html', recs=top_artists_source())
+    return render_template('top_artists.html', top=top_artists_source())
 
 
 @app.route('/top_artists_source')
