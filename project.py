@@ -145,7 +145,6 @@ def top_artists():
     return render_template('top_artists.html', top=top_artists_source())
 
 
-@app.route('/top_artists_source')
 def top_artists_source():
     """Return list of top 25 artists in db by pitchfork review."""
     conn = connect_to_db()
