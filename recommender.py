@@ -39,6 +39,7 @@ class Recommender:
         if data != []:
             return data
         else:
+            pass
             #compute top avg and return those
 
     def checkDB(self, u_id):
