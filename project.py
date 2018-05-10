@@ -134,7 +134,7 @@ def get_user_recommendations(u_id, retrain=False):
     for d in data:
         d_new.append(sp.artist(d))
 
-    return d_new
+    return jsonify(d_new)
 
     # return json object of hard coded artist for now
     # # return jsonify([sp.artist('4xRYI6VqpkE3UwrDrAZL8L'), sp.artist('3TVXtAsR1Inumwj472S9r4'),
