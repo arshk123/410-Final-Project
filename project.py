@@ -115,7 +115,7 @@ def user():
     if 'id' not in session:
         return render_template('index.html')
 
-    print("my debug", get_user_recommendations(session['id']).text)
+    print("my debug", get_user_recommendations(session['id']))
 
     if request.args.get('retrain') == 'True':
         return render_template('user.html', recs=get_user_recommendations(session['id'], retrain=True))
@@ -123,7 +123,6 @@ def user():
     return render_template('user.html', recs=get_user_recommendations(session['id']))
 
 
-@app.route('/user/<u_id>/recommendations')
 def get_user_recommendations(u_id, retrain=False):
     """Get recommendations based on a user's id."""
     # print(artist_rating.get_rating_from_query('Drake'))
@@ -134,7 +133,7 @@ def get_user_recommendations(u_id, retrain=False):
     for d in data:
         d_new.append(sp.artist(d))
 
-    return jsonify(recs=d_new)
+    return d_new
 
     # return json object of hard coded artist for now
     # # return jsonify([sp.artist('4xRYI6VqpkE3UwrDrAZL8L'), sp.artist('3TVXtAsR1Inumwj472S9r4'),
