@@ -117,20 +117,17 @@ def user():
 
     print(request.args.get('retrain'))
     if request.args.get('retrain'):
-        return render_template('user.html', recs=get_user_recommendations(session['id'], fullRetrain=True))
+        return render_template('user.html', recs=get_user_recommendations(session['id'], retrain=True))
 
     return render_template('user.html', recs=get_user_recommendations(session['id']))
 
 
 @app.route('/user/<u_id>/recommendations')
-def get_user_recommendations(u_id, fullRetrain=False):
+def get_user_recommendations(u_id, retrain=False):
     """Get recommendations based on a user's id."""
     # print(artist_rating.get_rating_from_query('Drake'))
-    data = ""
-    if (fullRetrain):
-        data = rec.recommend(u_id, fullRetrain=True)
-    else:
-        data = rec.recommend(u_id)
+
+    data = rec.recommend(u_id, fullRetrain=retrain)
 
     d_new = []
     for d in data:
