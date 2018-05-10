@@ -154,7 +154,7 @@ def top_artists_source():
     cur.execute('SELECT s_id FROM artists WHERE review IS NOT NULL ORDER BY review DESC LIMIT 25;')
 
     rows = cur.fetchall()
-    return jsonify([sp.artist(row[0]) for row in rows])
+    return [sp.artist(row[0]) for row in rows]
 
 
 @app.route('/artist/<s_id>')
