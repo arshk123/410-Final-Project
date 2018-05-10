@@ -233,6 +233,7 @@ def get_avg_user_rating(artist_id):
     if count:
         cur.execute('SELECT AVG(rating) FROM reviews WHERE a_id=%s', [artist_id])
         rating = cur.fetchone()[0]
+        rating = rating[:3]
     else:
         rating = '-'
     cur.close()
