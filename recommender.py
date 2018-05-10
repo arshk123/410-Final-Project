@@ -39,7 +39,7 @@ class Recommender:
         if data != []:
             return data
         else:
-            pass
+            return self.avgTopArtists(u_id)
             #compute top avg and return those
 
     def checkDB(self, u_id):
@@ -52,14 +52,39 @@ class Recommender:
             cur.execute('INSERT into recommendations (u_id) VALUES (%s)', (u_id,))
             cur.close()
             conn.close()
-            return False, []
+            return []
         cur.close()
         conn.close()
-        return row[1], row[0]
+        return row[0]['recommendations']
 
-    def avgTop(self):
-        pass
-        #write sql query to return top rated artists.
+    def avgTopArtists(self, u_id):
+        query = 'SELECT a_id, AVG(rating) as r FROM reviews group by a_id ORDER BY r DESC;'
+        conn = connect_to_db()
+        cur = conn.cursor()
+        cur.execute(query)
+        rows = cur.fetchmany(6)
+        ret = []
+        for row in rows:
+            ret.append(row[0])
+        ret = self.get_s_ids(ret)
+        # data = { u_id :  ret }
+        # self.pushAllToDB(data)
+        # possibly insert into db
+        # print(ret)
+        return ret
+
+    def get_s_ids(self, data):
+        conn = connect_to_db()
+        cur = conn.cursor()
+        ret = []
+        for d in data:
+            print(d)
+            cur.execute('SELECT s_id from artists where id=%s', [d])
+            s_id = cur.fetchone()
+            s_id = s_id[0]
+            ret.append(s_id)
+        # print(ret)
+        return ret
 
     def pullAllFromDB(self):
         conn = connect_to_db()
@@ -107,6 +132,8 @@ class Recommender:
                 if d[1] >= 5.5:
                     recommendations.append(d[0])
             if recommendations != []:
+                print(recommendations)
+                recommendations = self.get_s_ids(recommendations)
                 dic = { 'recommendations' : recommendations }
                 vals = (key, json.dumps(dic), "False", json.dumps(dic))
                 cur.execute(query, vals)
@@ -141,4 +168,5 @@ data = {
 
 recommender = Recommender()
 # recommender.periodicTrain()
-print(recommender.recommend(7))
+recommender.recommend(10)
+#

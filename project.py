@@ -15,6 +15,7 @@ app.secret_key = 'super_secret_key'
 sp = album_discovery.sp
 DATABASE_URL = os.environ['DATABASE_URL']
 running_local = False
+rec = recommender.Recommender()
 
 
 @app.route('/')
@@ -116,27 +117,17 @@ def user():
 def get_user_recommendations(u_id):
     """Get recommendations based on a user's id."""
     # print(artist_rating.get_rating_from_query('Drake'))
+    data = rec.recommend(u_id)
+    d_new = []
+    for d in data:
+        d_new.append(sp.artist(d))
 
-    # conn = connect_to_db()
-    # cur = conn.cursor()
-    #
-    # cur.execute('SELECT a_id, u_id, rating FROM reviews')
-    # rows = cur.fetchall()
-    # artist_ids = [i[0] for i in rows]
-    # user_ids = [i[1] for i in rows]
-    # ratings = [i[2] for i in rows]
-    #
-    # data = {'itemID': artist_ids,
-    #         'userID': user_ids,
-    #         'ratings': ratings }
-    #
-    # rec = recommender.Recommender()
-    # rec.setup(data)
+    return jsonify(d_new)
 
     # return json object of hard coded artist for now
-    return jsonify([sp.artist('4xRYI6VqpkE3UwrDrAZL8L'), sp.artist('3TVXtAsR1Inumwj472S9r4'),
-                    sp.artist('26VFTg2z8YR0cCuwLzESi2'), sp.artist('1Bl6wpkWCQ4KVgnASpvzzA'),
-                    sp.artist('536BYVgOnRky0xjsPT96zl'), sp.artist('4kI8Ie27vjvonwaB2ePh8T')])
+    # # return jsonify([sp.artist('4xRYI6VqpkE3UwrDrAZL8L'), sp.artist('3TVXtAsR1Inumwj472S9r4'),
+    #                 sp.artist('26VFTg2z8YR0cCuwLzESi2'), sp.artist('1Bl6wpkWCQ4KVgnASpvzzA'),
+    #                 sp.artist('536BYVgOnRky0xjsPT96zl'), sp.artist('4kI8Ie27vjvonwaB2ePh8T')])
 
 
 @app.route('/top_artists')
