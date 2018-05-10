@@ -16,7 +16,7 @@
             <h3>Pitchfork Rating: <span class="badge badge-dark ml-1">{% if rating is number %}{{ rating|round(1) }}{% else %}-{% endif %}</span></h3>
         </div>
         <div class="row">
-            <h3>Avg User Rating: <span class="badge badge-dark">{{ avg_user_rating|round(1) }} ({{ user_count }})</span></h3>
+            <h3>Avg User Rating: <span class="badge badge-dark">{% if avg_user_rating is number %}{{ avg_user_rating|round(1) }}{% else %}{{ avg_user_rating }}{% endif %} ({{ user_count }})</span></h3>
         </div>
         <div class="row">
             <div class="col">
