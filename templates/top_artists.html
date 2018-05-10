@@ -1,11 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Top 25 Artists{% endblock %}
 
-{% block head %}
-    {{ super() }}
-    {# <script type="text/javascript" src="{{url_for('static', filename='top_artists.js')}}"></script> #}
-{% endblock %}
-
 {% block navbar_items %}
     <li class="nav-item">
         {% if session['username'] %}
