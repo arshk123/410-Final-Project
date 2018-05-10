@@ -1,7 +1,7 @@
 Music Rater
 ===========
 
-Our CS410 Final Project. It uses sentiment analysis and pitchfork reviews to assign an artist a rating, and allows users to rate artists in order to form a content based recommendation system. This project uses the VADER sentiment analysis library available in nltk.
+Our CS410 Final Project. It uses sentiment analysis performed on pitchfork reviews to assign an artist a rating, and allows users to rate artists. Our system uses a combination of content-based filtering and collaborative filterting to recommend new artists to users. More specifically, the recommender system uses the k-nearest neighbors algorithm with cosine similarity metrics .This project uses the VADER sentiment analysis library available in nltk.
 
 Installation
 ------------
