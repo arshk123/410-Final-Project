@@ -28,5 +28,27 @@
                 <h1>Recommended For You</h1>
             </div>
         </div>
+        <div class="row">
+            <div class="card-deck-wrapper">
+                <div class="card-deck">
+                    {% for artist in recs %}
+                    <div class="col-4">
+                        <div class="card" style="width: 20rem">
+                            {% if artist['images'] %}
+                            <img style="width:20rem; height:20rem" class="card-img-top img-fluid" src="{{ artist['images'][0]['url'] }}" />
+                            {% else %}
+                            <img style="width:20rem; height:20rem" class="card-img-top img-fluid" src="{{url_for('static', filename='album-art-empty.png')}}" />
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ artist['name'] }}</h5>
+                                <p class="card-text">Genre: {{ artist['genres'][0] }}</p>
+                                <a href="{{ url_for('artist', s_id=artist['id']) }}" class="btn btn-primary">View Artist Page</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock %}

@@ -97,7 +97,7 @@ def signup():
     hashed_password = generate_password_hash(request.form['password'])
     cur.execute('INSERT INTO users VALUES (%s, %s, %s)', [request.form['email'], hashed_password, request.form['username']])
     session['email'] = request.form['email']
-    session['username'] = request.form['email']
+    session['username'] = request.form['username']
     conn.commit()
     conn.close()
 
@@ -107,10 +107,10 @@ def signup():
 @app.route('/user')
 def user():
     """Show the user some recommendations."""
-    if 'email' not in session:
+    if 'id' not in session:
         return render_template('index.html')
 
-    return render_template('user.html', recs=get_user_recommendations(1))
+    return render_template('user.html', recs=get_user_recommendations(session['id']))
 
 
 @app.route('/user/<u_id>/recommendations')
@@ -122,7 +122,7 @@ def get_user_recommendations(u_id):
     for d in data:
         d_new.append(sp.artist(d))
 
-    return jsonify(d_new)
+    return d_new
 
     # return json object of hard coded artist for now
     # # return jsonify([sp.artist('4xRYI6VqpkE3UwrDrAZL8L'), sp.artist('3TVXtAsR1Inumwj472S9r4'),
