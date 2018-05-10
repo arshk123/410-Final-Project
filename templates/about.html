@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}About Music Rater{% endblock %}
+
+{% block navbar_items %}
+    <li class="nav-item">
+        {% if session['username'] %}
+        <a class="nav-link" href="{{url_for('user')}}">Home</a>
+        {% else %}
+        <a class="nav-link" href="{{url_for('index')}}">Home</a>
+        {% endif %}
+    </li>
+    <li class="nav-item active">
+        <a class="nav-link" href="#">About</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{url_for('new_artist')}}">Request New Artist</a>
+    </li>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <h1>About Us</h1>
+        </div>
+        <div class="row">
+            <p>This website was created for our CS410 final project at the University of Illinois.</p>
+        </div>
+    </div>
+{% endblock %}

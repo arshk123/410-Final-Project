@@ -1,15 +1,14 @@
-import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials
-from api_keys import spotify_client_id, spotify_client_secret
+from album_discovery import sp
 from surprise import evaluate, Dataset, Reader
 from surprise import KNNBasic
 from collections import defaultdict
 import random
 import pandas as pd
+import os
 
 sample_artists = [ 'Goldlink', 'Cage the elephant', 'DNCE', 'T-pain', 'Kings of Leon', 'Hurley Mower', 'Shallou', 'Khalid', 'Ramin Djawadi', 'Ed Sheeran', 'Kid Cudi', 'Vengaboys', 'Calvin Harris', 'The Weekend', 'Drake', 'Lil Dicky', 'Bowling for Soup', 'XXXTentacion', 'Post Malone', 'A$ap rocky', 'Illenium', 'Logic']
-scm = SpotifyClientCredentials(client_id=spotify_client_id, client_secret=spotify_client_secret)
-sp = spotipy.Spotify(client_credentials_manager=scm)
+
+
 
 class Recommender:
     def __init__(self, pg=None, testing=False):
@@ -46,9 +45,6 @@ class Recommender:
         print(predictions)
         topPreds = self.top3(predictions)
         print(topPreds)
-
-    def loadData(self):
-        pass
 
     def buildSampleDataset(self, numSamples=10):
         data = {
