@@ -15,7 +15,7 @@ chart_names = ['artist-100', 'greatest-hot-100-women-artists',
                'billboard-200', 'hot-100']
 
 DATABASE_URL = os.environ['DATABASE_URL']
-running_local = False
+ON_HEROKU = (os.environ['ON_HEROKU', 'False']) == 'True'
 single_artist_lock = threading.Lock()
 artist_queue = []
 
@@ -142,10 +142,10 @@ def remove_artists_in_db(artists):
 
 def connect_to_db():
     """Create a connection to the DB."""
-    if running_local:
-        conn = psycopg2.connect(DATABASE_URL)
-    else:
+    if ON_HEROKU:
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    else:
+        conn = psycopg2.connect(DATABASE_URL)
     return conn
 
 

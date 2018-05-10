@@ -14,7 +14,7 @@ app.secret_key = 'super_secret_key'
 
 sp = album_discovery.sp
 DATABASE_URL = os.environ['DATABASE_URL']
-running_local = False
+ON_HEROKU = (os.environ['ON_HEROKU', 'False']) == 'True'
 rec = recommender.Recommender()
 
 
@@ -323,8 +323,8 @@ def rate_artist(s_id):
 
 def connect_to_db():
     """Create a connection to the DB."""
-    if running_local:
-        conn = psycopg2.connect(DATABASE_URL)
-    else:
+    if ON_HEROKU:
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    else:
+        conn = psycopg2.connect(DATABASE_URL)
     return conn

@@ -1,20 +1,22 @@
-from album_discovery import sp
+"""This module contains the recommendation library."""
 import psycopg2
-from surprise import evaluate, Dataset, Reader
+from surprise import Dataset, Reader
 from surprise import KNNBasic
 from collections import defaultdict
-import random
 import pandas as pd
 import os
 import json
 
-sample_artists = [ 'Goldlink', 'Cage the elephant', 'DNCE', 'T-pain', 'Kings of Leon', 'Hurley Mower', 'Shallou', 'Khalid', 'Ramin Djawadi', 'Ed Sheeran', 'Kid Cudi', 'Vengaboys', 'Calvin Harris', 'The Weekend', 'Drake', 'Lil Dicky', 'Bowling for Soup', 'XXXTentacion', 'Post Malone', 'A$ap rocky', 'Illenium', 'Logic']
 pickle_file = "data.pickle"
-running_local = False
+ON_HEROKU = (os.environ['ON_HEROKU', 'False']) == 'True'
 DATABASE_URL = os.environ['DATABASE_URL']
 
+
 class Recommender:
+    """Recommender object."""
+
     def __init__(self, pg=None, testing=False):
+        """Initialize and train a new recommender."""
         self.labels = {}
         self.trained = False
         self.pg = pg
@@ -23,6 +25,7 @@ class Recommender:
         self.periodicTrain()
 
     def fit(self, data):
+        """Fit this object to data."""
         df = pd.DataFrame.from_dict(data)
         reader = Reader(line_format='user item rating', rating_scale=(1, 10))
         data = Dataset.load_from_df(df[['u_id', 'a_id', 'ratings']], reader)
@@ -36,6 +39,7 @@ class Recommender:
         return train
 
     def recommend(self, u_id, fullRetrain=False):
+        """Recommend artists for a user."""
         if fullRetrain:
             self.periodicTrain()
             self.recommend(u_id, fullRetrain=False)
@@ -44,9 +48,9 @@ class Recommender:
             return data
         else:
             return self.avgTopArtists(u_id)
-            #compute top avg and return those
 
     def checkDB(self, u_id):
+        """Check the database to see if data exists for u_id."""
         # called by predict
         conn = connect_to_db()
         cur = conn.cursor()
@@ -66,10 +70,12 @@ class Recommender:
         return row[0]['recommendations']
 
     def avgTopArtists(self, u_id):
-        query = 'SELECT a_id, AVG(rating) as r FROM reviews group by a_id ORDER BY r DESC;'
+        """Return top artists."""
+        query = 'SELECT id, review FROM artists WHERE review IS NOT NULL and s_id NOT IN (select s_id from artists, reviews where artists.id=reviews.a_id and reviews.u_id=%s) ORDER BY review DESC LIMIT 25;'
+        vals = (u_id,)
         conn = connect_to_db()
         cur = conn.cursor()
-        cur.execute(query)
+        cur.execute(query, vals)
         rows = cur.fetchmany(6)
         ret = []
         for row in rows:
@@ -82,6 +88,7 @@ class Recommender:
         return ret
 
     def get_s_ids(self, data):
+        """Get spotify ids from artist ids."""
         conn = connect_to_db()
         cur = conn.cursor()
         ret = []
@@ -95,13 +102,14 @@ class Recommender:
         return ret
 
     def pullAllFromDB(self):
+        """Pull all reviews from db."""
         conn = connect_to_db()
         cur = conn.cursor()
         cur.execute('select * from reviews;')
         data = {
-            'u_id' : [],
-            'a_id' : [],
-            'ratings' : []
+            'u_id': [],
+            'a_id': [],
+            'ratings': []
         }
         users = []
         artists = []
@@ -121,6 +129,7 @@ class Recommender:
         return data
 
     def periodicTrain(self):
+        """Train the model."""
         data = self.pullAllFromDB()
         train = self.fit(data)
         test = train.build_anti_testset()
@@ -131,6 +140,7 @@ class Recommender:
         # We should be able to use this now? yes
 
     def pushAllToDB(self, data):
+        """Push recommendations to the database."""
         conn = connect_to_db()
         cur = conn.cursor()
         query = 'INSERT INTO recommendations (u_id, recommendations, computing) VALUES (%s, %s, %s) ON CONFLICT (u_id) DO UPDATE SET recommendations=%s'
@@ -150,6 +160,7 @@ class Recommender:
         conn.close()
 
     def top3(self, predictions, topN=6):
+        """Get top 3."""
         top_recs = defaultdict(list)
         for uid, iid, rid, est, _ in predictions:
             top_recs[uid].append((iid, est))
@@ -158,12 +169,13 @@ class Recommender:
             top_recs[uid] = user_ratings[:topN]
         return top_recs
 
+
 def connect_to_db():
     """Create a connection to the DB."""
-    if running_local:
-        conn = psycopg2.connect(DATABASE_URL)
-    else:
+    if ON_HEROKU:
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    else:
+        conn = psycopg2.connect(DATABASE_URL)
     return conn
 
 """
