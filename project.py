@@ -7,7 +7,7 @@ import os
 import threading
 import album_discovery
 from populate_db import add_single_artist_from_json, artist_queue
-# import recommender
+import recommender
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'
