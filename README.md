@@ -3,6 +3,24 @@ Music Rater
 
 Our CS410 Final Project. It uses sentiment analysis performed on pitchfork reviews to assign an artist a rating, and allows users to rate artists. Our system uses a combination of content-based filtering and collaborative filterting to recommend new artists to users. More specifically, the recommender system uses the k-nearest neighbors algorithm with cosine similarity metrics .This project uses the VADER sentiment analysis library available in nltk.
 
+The project is implemented as a web app using python and Flask for everything on the backend. Most of the frontend was created using the Bootstrap framework along with basic HTML, CSS, and JavaScript. The code for the recommendation system can be found in the recommender.py file, and the code that performs sentiment analysis and generates a rating for each artist is in the artist_rating.py file. Most of the functions in these files are called from the project.py. This file is where each of the endpoints for the website live, and it is where the majority of the data formatting and serving of the webpages occurs.
+
+Overview of all Technology Used
+------------
+### Programming Languages Used
+Python
+HTML and CSS
+JavaScript
+### Frameworks
+Flask
+Bootstrap
+### Libraries Used
+Spotipy (for access to Spotify API)
+Pitchfork submodule
+NLTK (for VADER sentiment analysis)
+Surprise (for recommender system)
+Pandas
+
 Installation
 ------------
 Clone the repo and install the packages in requirements.txt
