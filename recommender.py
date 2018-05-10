@@ -167,6 +167,4 @@ data = {
 """
 
 recommender = Recommender()
-# recommender.periodicTrain()
-recommender.recommend(10)
-#
+recommender.periodicTrain()
