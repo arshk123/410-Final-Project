@@ -46,6 +46,10 @@ class Recommender:
         # called by predict
         conn = connect_to_db()
         cur = conn.cursor()
+        cur.execute('SELECT * from users where id=%s', [u_id])
+        row = cur.fetchone()
+        if not row:
+            return []
         cur.execute('SELECT recommendations, computing FROM recommendations where u_id=%s;', (u_id,))
         row = cur.fetchone()
         if not row:
@@ -167,4 +171,5 @@ data = {
 """
 
 recommender = Recommender()
-recommender.periodicTrain()
+# recommender.periodicTrain()
+recommender.recommend(1)
