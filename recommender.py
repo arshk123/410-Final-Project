@@ -34,30 +34,6 @@ class Recommender:
         self.knn.fit(train)
         return train
 
-    # def predict(self, u_id):
-    #     conn = connect_to_db()
-    #     cur = conn.cursor()
-    #     cur.execute('SELECT * from reviews where u_id=%s;', u_id)
-    #     data = {}
-    #     rows = cur.fetchall()
-    #     for row in rows:
-    #         pass
-    #     # Query recommendations and cross reference with previously reviewed items by u_id, if not empty, then return recs
-    #
-    #     # 1. Check if compute bool is False, then Set compute bool to True, if true then do nothing?
-    #
-    #     # 2. Check if already computed and in db return if so, make sure to flip compute bool to False
-    #     computing, data = self.checkDB(u_id)
-    #     if data != []:
-    #         # flip compute bool
-    #         return data
-    #
-    #     # 3. check last updated on pickle_file
-    #     # 4. If greater than 24 hrs then retrain and predict, return highest avg reviews by users and tailored flag to false
-    #     # 5. Else predict and return with tailored flag to true
-    #
-    #     pass
-
     def recommend(self, u_id):
         data = self.checkDB(u_id)
         if data != []:
@@ -81,6 +57,7 @@ class Recommender:
         return row[1], row[0]
 
     def avgTop(self):
+        pass
         #write sql query to return top rated artists.
 
     def pullAllFromDB(self):
@@ -118,14 +95,6 @@ class Recommender:
         print(top_predictions)
         self.pushAllToDB(top_predictions)
         # We should be able to use this now? yes
-
-    def loadPickle(self):
-        # TODO once recommender integrated with db
-        pass
-
-    def unloadPickle(self):
-        # TODO once recommender integrated with db
-        pass
 
     def pushAllToDB(self, data):
         conn = connect_to_db()
