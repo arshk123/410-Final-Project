@@ -24,4 +24,5 @@ Unidecode==1.0.22
 urllib3==1.22
 Werkzeug==0.14.1
 numpy>=1.11.2
+surprise==0.1
 pandas==0.22.0
