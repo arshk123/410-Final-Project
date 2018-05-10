@@ -39,9 +39,9 @@
                     <div class="col-4">
                         <div class="card" style="width: 20rem">
                             {% if artist['images'] %}
-                            <img class="card-img-top img-fluid" src="{{ artist['images'][0]['url'] }}" />
+                            <img style="width:20rem; height:20rem" class="card-img-top img-fluid" src="{{ artist['images'][0]['url'] }}" />
                             {% else %}
-                            <img class="card-img-top img-fluid" src="{{url_for('static', filename='album-art-empty.png')}}" />
+                            <img style="width:20rem; height:20rem" class="card-img-top img-fluid" src="{{url_for('static', filename='album-art-empty.png')}}" />
                             {% endif %}
                             <div class="card-body">
                                 <h5 class="card-title">{{ artist['name'] }}</h5>
