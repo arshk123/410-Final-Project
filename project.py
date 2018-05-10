@@ -123,10 +123,15 @@ def user():
 
 
 @app.route('/user/<u_id>/recommendations')
-def get_user_recommendations(u_id):
+def get_user_recommendations(u_id, fullRetrain=False):
     """Get recommendations based on a user's id."""
     # print(artist_rating.get_rating_from_query('Drake'))
-    data = rec.recommend(u_id)
+    data = ""
+    if (fullRetrain):
+        data = rec.recommend(u_id, fullRetrain=True)
+    else:
+        data = rec.recommend(u_id)
+
     d_new = []
     for d in data:
         d_new.append(sp.artist(d))
