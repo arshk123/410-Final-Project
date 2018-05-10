@@ -9,16 +9,25 @@ Overview of all Technology Used
 ------------
 ### Programming Languages Used
 Python
+
 HTML and CSS
+
 JavaScript
+
 ### Frameworks
 Flask
+
 Bootstrap
+
 ### Libraries Used
 Spotipy (for access to Spotify API)
+
 Pitchfork submodule
+
 NLTK (for VADER sentiment analysis)
+
 Surprise (for recommender system)
+
 Pandas
 
 Installation
