@@ -23,6 +23,6 @@ twython==3.6.0
 Unidecode==1.0.22
 urllib3==1.22
 Werkzeug==0.14.1
-surprise==1.0.6
+numpy>=1.11.2
+surprise==0.1
 pandas==0.22.0
-json==2.0.9

@@ -20,6 +20,7 @@ class Recommender:
         self.pg = pg
         self.testing = testing
         self.knn = None
+        self.periodicTrain()
 
     def fit(self, data):
         df = pd.DataFrame.from_dict(data)
@@ -34,7 +35,10 @@ class Recommender:
         self.knn.fit(train)
         return train
 
-    def recommend(self, u_id):
+    def recommend(self, u_id, fullRetrain=False):
+        if fullRetrain:
+            self.periodicTrain()
+            self.recommend(u_id, fullRetrain=False)
         data = self.checkDB(u_id)
         if data != []:
             return data
@@ -46,6 +50,10 @@ class Recommender:
         # called by predict
         conn = connect_to_db()
         cur = conn.cursor()
+        cur.execute('SELECT * from users where id=%s', [u_id])
+        row = cur.fetchone()
+        if not row:
+            return []
         cur.execute('SELECT recommendations, computing FROM recommendations where u_id=%s;', (u_id,))
         row = cur.fetchone()
         if not row:
@@ -168,3 +176,4 @@ data = {
 
 recommender = Recommender()
 recommender.periodicTrain()
+# recommender.recommend(7, fullRetrain=True)
