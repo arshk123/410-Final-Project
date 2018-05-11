@@ -11,7 +11,7 @@ Ryan (rgates3): Design and implementation of front end, initial setup and deploy
 
 Tejas (tsharm5): Writing code that performs sentiment analysis on pitchfork, creation of webpages on the front end, writing various scripts for database population, helping create and edit video presentation
 
-Arsh (khndlwl3): Design and implementation of recommendation system, design and implementation of database, helping create video presentation
+Arsh (khndlwl3): Design and implementation of recommendation system (Hybrid Collaborative and Content Based), design and implementation of database, helping create video presentation
 
 Overview of all Technology Used
 ------------
@@ -35,6 +35,8 @@ Pitchfork submodule (for access to Pitchfork reviews)
 NLTK (for VADER sentiment analysis)
 
 Surprise (for recommender system)
+
+Psycopg2 (for Database Queries)
 
 Pandas
 
@@ -140,7 +142,9 @@ Couldn't find venice
 7.745075112443779
 ```
 
-It's infeasible to use the recommender unless you have the database set up properly and it actually has some data in it. Once you do, we have included the code to get recommendations below.
+It's infeasible to use the recommender unless you have the database set up properly and it actually has some data in it. Once you do, we have included the code to get recommendations below. Upon creation of a new Recommender object, the whole database is
+queried and the recommender is retrained and evaluated, all recommendations are then inserted into the database recommendations table. The reason we did it this way is because we know we don't have too much data, and we wanted to ensure the most up to date
+recommendations are given to our users. As such, we wrote this recommender such that whenever a recommendation isn't found in the database e.g. a new user signs up, we reevaluate the recommendations to update them.
 
 ```python
 >>> import recommender
