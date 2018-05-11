@@ -14,7 +14,7 @@ app.secret_key = 'super_secret_key'
 
 sp = album_discovery.sp
 DATABASE_URL = os.environ['DATABASE_URL']
-ON_HEROKU = (os.environ['ON_HEROKU', 'False']) == 'True'
+ON_HEROKU = os.environ.get('ON_HEROKU', 'False') == 'True'
 rec = recommender.Recommender()
 
 
