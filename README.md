@@ -160,7 +160,9 @@ Beginning population with batch 1/1
 ```
 
 ### Using the recommender
-It's infeasible to use the recommender unless you have the database set up properly and it actually has some data in it. Once you do, we have included the code to get recommendations below.
+It's infeasible to use the recommender unless you have the database set up properly and it actually has some data in it. This means creating some users and having them rate some artists.  
+The recommender works by ...  
+Once you have the database set up, you can get recommendations in the following manner.
 
 ```python
 >>> import recommender
