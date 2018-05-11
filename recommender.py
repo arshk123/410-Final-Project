@@ -152,7 +152,7 @@ class Recommender:
             if recommendations != []:
                 print(recommendations)
                 recommendations = self.get_s_ids(recommendations)
-                dic = { 'recommendations' : recommendations }
+                dic = {'recommendations': recommendations}
                 vals = (key, json.dumps(dic), "False", json.dumps(dic))
                 cur.execute(query, vals)
         conn.commit()
