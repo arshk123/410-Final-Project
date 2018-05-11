@@ -42,12 +42,12 @@ class Recommender:
         """Recommend artists for a user."""
         if fullRetrain:
             self.periodicTrain()
-            self.recommend(u_id, fullRetrain=False)
+            return self.recommend(u_id, fullRetrain=False)
         data = self.checkDB(u_id)
         if data != []:
-            return data
+            return data, True
         else:
-            return self.avgTopArtists(u_id)
+            return self.avgTopArtists(u_id), False
 
     def checkDB(self, u_id):
         """Check the database to see if data exists for u_id."""

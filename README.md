@@ -9,9 +9,9 @@ Individual Contributions
 
 Ryan (rgates3): Design and implementation of front end, initial setup and deployment to Heroku, helping create and edit video presentation
 
-Tejas (tsharm5): Writing code that performs sentiment analysis on pitchfork, creation of webpages on the front end, writing various scripts for database population, helping create and edit video presentation
+Tejas (tsharm5): Fixing the pitchfork API (there were a lot of problems in the initial repo, feel free to check out the submodule to see specific changes, though we didn't focus on this because it was only fixing some heavily unmaintained code), writing code that performs sentiment analysis on pitchfork, creation of webpages on the front end, writing various scripts for database population, helping create and edit video presentation
 
-Arsh (khndlwl3): Design and implementation of recommendation system (Hybrid Collaborative and Content Based), design and implementation of database, helping create video presentation
+Arsh (khndlwl3): Design and implementation of recommendation system, design and implementation of database, helping create video presentation
 
 Overview of all Technology Used
 ------------
@@ -30,15 +30,17 @@ Bootstrap
 ### Libraries Used
 Spotipy (for access to Spotify API)
 
-Pitchfork submodule (for access to Pitchfork reviews)
+Unofficial Pitchfork API (for access to Pitchfork reviews)
+
+Unofficial Billboard API (for access to Billboard charts)
 
 NLTK (for VADER sentiment analysis)
 
-Surprise (for recommender system)
-
 Psycopg2 (for Database Queries)
 
-Pandas
+Surprise (for recommender system)
+
+Pandas (for data handling)
 
 Installation
 ------------
@@ -78,7 +80,10 @@ https://www.a2hosting.com/kb/developer-corner/postgresql/import-and-export-a-pos
 
 Using the components
 --------------------
-To use the components for creating an artist review rating you can do the following.
+### Getting the Pitchfork Rating
+For getting what we call a "Pitchfork Rating" on our website, we query the spotify API to get a set of albums for an artist before using those pairs to get all the reviews on pitchfork for said artist.  
+Once we have this information, we apply sentiment analysis to the review text and using all this information, we generate an overall rating for the artist.  
+To use this component you can do the following.
 
 ```python
 >> from album_discovery import *
@@ -142,9 +147,24 @@ Couldn't find venice
 7.745075112443779
 ```
 
-It's infeasible to use the recommender unless you have the database set up properly and it actually has some data in it. Once you do, we have included the code to get recommendations below. Upon creation of a new Recommender object, the whole database is
-queried and the recommender is retrained and evaluated, all recommendations are then inserted into the database recommendations table. The reason we did it this way is because we know we don't have too much data, and we wanted to ensure the most up to date
-recommendations are given to our users. As such, we wrote this recommender such that whenever a recommendation isn't found in the database e.g. a new user signs up, we reevaluate the recommendations to update them.
+### Populating your DB
+Obviously, it wouldn't make sense to need to add each artist by hand, so we also wrote a handy script to populate your database with artists after creating it.  
+It works by getting a list of artists from a set of Billboard charts using the unofficial Billboard API, and then adding each one to the database.  
+To change these charts, simply edit the `chart_names` variable in `populate_db.py`. You can find the chart format by looking at the URL for a chart on the Billboard website. It will be of the form `https://www.billboard.com/charts/artist-100`. The "artist-100" part is the important part here.  
+You might be worried about problems that arise due to running the script on such a large set of artists, but the script automatically creates batches, and checks if the artist is already in the database before adding it, which makes it very easy to just run the script again if it fails. Additionally, at the end of a successful run, it prints a list of artists which couldn't be added to the database.  
+In the below example, I didn't actually use the charts for brevity's sake, instead simply hardcoding a list of artists (which can be done by setting the `artists` variable under the main function), so there is only one batch.
+
+```shell
+$ python populate_db.py
+Found 2 artists using the billboard API
+Beginning population with batch 1/1
+# This script would then go through each batch, printing out all the information outlined in the "Getting the Pitchfork Rating" section, followed by a "Failed to add the following artists:", but only if an artist raised an exception while adding it to the db.
+```
+
+### Using the recommender
+It's infeasible to use the recommender unless you have the database set up properly and it actually has some data in it. This means creating some users and having them rate some artists.  
+The recommender works by ...  
+Once you have the database set up, you can get recommendations in the following manner.
 
 ```python
 >>> import recommender
@@ -153,6 +173,8 @@ Computing the cosine similarity matrix...
 Done computing similarity matrix.
 # There's a lot more debugging output after this
 >>> rec.recommend(7) # it's as simple as calling the recommend function with an argument of user id
-# This returns a list of recommended artists
-['16yUpGkBRgc2eDMd3bB3Uw', '2h93pZq0e7k5yf4dywlkpM', '14x0FyR1UMUO1Sc8V5TzN6', '3koiLjNrgRTNbOwViDipeA', '329iU5aUf9pGiYFbjE9xqQ', '1U1el3k54VvEUzo3ybLPlM']
+# This returns a list of spotify ids for recommended artists and a boolean
+# If the boolean is true, this is a set of recommended artists tailored personally to the user
+# If it is false, this function is simply returning a list of the top 6 artists in the database
+['16yUpGkBRgc2eDMd3bB3Uw', '2h93pZq0e7k5yf4dywlkpM', '14x0FyR1UMUO1Sc8V5TzN6', '3koiLjNrgRTNbOwViDipeA', '329iU5aUf9pGiYFbjE9xqQ', '1U1el3k54VvEUzo3ybLPlM'], True
 ```

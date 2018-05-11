@@ -116,22 +116,24 @@ def user():
         return render_template('index.html')
 
     if request.args.get('retrain') == 'True':
-        return render_template('user.html', recs=get_user_recommendations(session['id'], retrain=True))
+        recs, is_personal = get_user_recommendations(session['id'], retrain=True)
+    else:
+        recs, is_personal = get_user_recommendations(session['id'])
 
-    return render_template('user.html', recs=get_user_recommendations(session['id']))
+    return render_template('user.html', recs=recs, is_personal=is_personal)
 
 
 def get_user_recommendations(u_id, retrain=False):
     """Get recommendations based on a user's id."""
     # print(artist_rating.get_rating_from_query('Drake'))
 
-    data = rec.recommend(u_id, fullRetrain=retrain)
+    data, is_personal = rec.recommend(u_id, fullRetrain=retrain)
 
     d_new = []
     for d in data:
         d_new.append(sp.artist(d))
 
-    return d_new
+    return d_new, is_personal
 
     # return json object of hard coded artist for now
     # # return jsonify([sp.artist('4xRYI6VqpkE3UwrDrAZL8L'), sp.artist('3TVXtAsR1Inumwj472S9r4'),
