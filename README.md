@@ -30,13 +30,15 @@ Bootstrap
 ### Libraries Used
 Spotipy (for access to Spotify API)
 
-Pitchfork submodule (for access to Pitchfork reviews)
+Unofficial Pitchfork API (for access to Pitchfork reviews)
+
+Unofficial Billboard API (for access to Billboard charts)
 
 NLTK (for VADER sentiment analysis)
 
 Surprise (for recommender system)
 
-Pandas
+Pandas (for data handling)
 
 Installation
 ------------
@@ -76,7 +78,10 @@ https://www.a2hosting.com/kb/developer-corner/postgresql/import-and-export-a-pos
 
 Using the components
 --------------------
-To use the components for creating an artist review rating you can do the following.
+### Getting the Pitchfork Rating
+For getting what we call a "Pitchfork Rating" on our website, we query the spotify API to get a set of albums for an artist before using those pairs to get all the reviews on pitchfork for said artist.  
+Once we have this information, we apply sentiment analysis to the review text and using all this information, we generate an overall rating for the artist.  
+To use this component you can do the following.
 
 ```python
 >> from album_discovery import *
@@ -140,6 +145,21 @@ Couldn't find venice
 7.745075112443779
 ```
 
+### Populating your DB
+Obviously, it wouldn't make sense to need to add each artist by hand, so we also wrote a handy script to populate your database with artists after creating it.  
+It works by getting a list of artists from a set of Billboard charts using the unofficial Billboard API, and then adding each one to the database.  
+To change these charts, simply edit the `chart_names` variable in `populate_db.py`. You can find the chart format by looking at the URL for a chart on the Billboard website. It will be of the form `https://www.billboard.com/charts/artist-100`. The "artist-100" part is the important part here.  
+You might be worried about problems that arise due to running the script on such a large set of artists, but the script automatically creates batches, and checks if the artist is already in the database before adding it, which makes it very easy to just run the script again if it fails. Additionally, at the end of a successful run, it prints a list of artists which couldn't be added to the database.  
+In the below example, I didn't actually use the charts for brevity's sake, instead simply hardcoding a list of artists (which can be done by setting the `artists` variable under the main function), so there is only one batch.
+
+```shell
+$ python populate_db.py
+Found 2 artists using the billboard API
+Beginning population with batch 1/1
+# This script would then go through each batch, printing out all the information outlined in the "Getting the Pitchfork Rating" section, followed by a "Failed to add the following artists:", but only if an artist raised an exception while adding it to the db.
+```
+
+### Using the recommender
 It's infeasible to use the recommender unless you have the database set up properly and it actually has some data in it. Once you do, we have included the code to get recommendations below.
 
 ```python

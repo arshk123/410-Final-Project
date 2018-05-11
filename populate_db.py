@@ -157,7 +157,7 @@ if __name__ == '__main__':
     n = len(batches)
     failed_artists = []
     for i, batch in enumerate(batches):
-        print("Beginning population with batch {}/{}".format(i, n))
+        print("Beginning population with batch {}/{}".format(i + 1, n))
         try:
             populate_db(batch)
         except Exception as e:
