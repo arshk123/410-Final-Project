@@ -9,7 +9,7 @@ Individual Contributions
 
 Ryan (rgates3): Design and implementation of front end, initial setup and deployment to Heroku, helping create and edit video presentation
 
-Tejas (tsharm5): Writing code that performs sentiment analysis on pitchfork, creation of webpages on the front end, writing various scripts for database population, helping create and edit video presentation
+Tejas (tsharm5): Fixing the pitchfork API (there were a lot of problems in the initial repo, feel free to check out the submodule to see specific changes, though we didn't focus on this because it was only fixing some heavily unmaintained code), writing code that performs sentiment analysis on pitchfork, creation of webpages on the front end, writing various scripts for database population, helping create and edit video presentation
 
 Arsh (khndlwl3): Design and implementation of recommendation system, design and implementation of database, helping create video presentation
 
