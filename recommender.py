@@ -8,7 +8,7 @@ import os
 import json
 
 pickle_file = "data.pickle"
-ON_HEROKU = (os.environ['ON_HEROKU', 'False']) == 'True'
+ON_HEROKU = os.environ.get('ON_HEROKU', 'False') == 'True'
 DATABASE_URL = os.environ['DATABASE_URL']
 
 

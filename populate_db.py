@@ -15,7 +15,7 @@ chart_names = ['artist-100', 'greatest-hot-100-women-artists',
                'billboard-200', 'hot-100']
 
 DATABASE_URL = os.environ['DATABASE_URL']
-ON_HEROKU = (os.environ['ON_HEROKU', 'False']) == 'True'
+ON_HEROKU = os.environ.get('ON_HEROKU', 'False') == 'True'
 single_artist_lock = threading.Lock()
 artist_queue = []
 
