@@ -23,6 +23,13 @@
                 <h1>Recommended For You</h1><form action="/user"><input type="submit" class="btn btn-success" value="Retrain Recommendation Model"><input type="hidden" name="retrain" value="True"/></form>
             </div>
         </div>
+        {% if not is_personal %}
+        <div class="row">
+            <div class="col">
+                <p>These recommendations are based on the top rated artists in the database. In order to get some personalized ratings, please rate some artists and then press the "Retrain Recommendation Model" button above.</p>
+            </div>
+        </div>
+        {% endif %}
         <div class="row">
             <div class="card-deck-wrapper">
                 <div class="card-deck">
