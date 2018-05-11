@@ -7,14 +7,15 @@ import os
 import threading
 import album_discovery
 from populate_db import add_single_artist_from_json, artist_queue
-# import recommender
+import recommender
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'
 
 sp = album_discovery.sp
 DATABASE_URL = os.environ['DATABASE_URL']
-running_local = False
+ON_HEROKU = (os.environ['ON_HEROKU', 'False']) == 'True'
+rec = recommender.Recommender()
 
 
 @app.route('/')
@@ -95,8 +96,13 @@ def signup():
 
     hashed_password = generate_password_hash(request.form['password'])
     cur.execute('INSERT INTO users VALUES (%s, %s, %s)', [request.form['email'], hashed_password, request.form['username']])
+    cur.execute('SELECT * FROM users WHERE email=%s', [request.form['email']])
+    row = cur.fetchone()
+
     session['email'] = request.form['email']
-    session['username'] = request.form['email']
+    session['username'] = request.form['username']
+    session['id'] = row[3]
+
     conn.commit()
     conn.close()
 
@@ -106,37 +112,48 @@ def signup():
 @app.route('/user')
 def user():
     """Show the user some recommendations."""
-    if 'email' not in session:
+    if 'id' not in session:
         return render_template('index.html')
 
-    return render_template('user.html', email=session['email'], recs=get_user_recommendations(1))
+    if request.args.get('retrain') == 'True':
+        return render_template('user.html', recs=get_user_recommendations(session['id'], retrain=True))
+
+    return render_template('user.html', recs=get_user_recommendations(session['id']))
 
 
-@app.route('/user/<u_id>/recommendations')
-def get_user_recommendations(u_id):
+def get_user_recommendations(u_id, retrain=False):
     """Get recommendations based on a user's id."""
     # print(artist_rating.get_rating_from_query('Drake'))
 
-    # conn = connect_to_db()
-    # cur = conn.cursor()
-    #
-    # cur.execute('SELECT a_id, u_id, rating FROM reviews')
-    # rows = cur.fetchall()
-    # artist_ids = [i[0] for i in rows]
-    # user_ids = [i[1] for i in rows]
-    # ratings = [i[2] for i in rows]
-    #
-    # data = {'itemID': artist_ids,
-    #         'userID': user_ids,
-    #         'ratings': ratings }
-    #
-    # rec = recommender.Recommender()
-    # rec.setup(data)
+    data = rec.recommend(u_id, fullRetrain=retrain)
+
+    d_new = []
+    for d in data:
+        d_new.append(sp.artist(d))
+
+    return d_new
 
     # return json object of hard coded artist for now
-    return jsonify([sp.artist('4xRYI6VqpkE3UwrDrAZL8L'), sp.artist('3TVXtAsR1Inumwj472S9r4'),
-                    sp.artist('26VFTg2z8YR0cCuwLzESi2'), sp.artist('1Bl6wpkWCQ4KVgnASpvzzA'),
-                    sp.artist('536BYVgOnRky0xjsPT96zl'), sp.artist('4kI8Ie27vjvonwaB2ePh8T')])
+    # # return jsonify([sp.artist('4xRYI6VqpkE3UwrDrAZL8L'), sp.artist('3TVXtAsR1Inumwj472S9r4'),
+    #                 sp.artist('26VFTg2z8YR0cCuwLzESi2'), sp.artist('1Bl6wpkWCQ4KVgnASpvzzA'),
+    #                 sp.artist('536BYVgOnRky0xjsPT96zl'), sp.artist('4kI8Ie27vjvonwaB2ePh8T')])
+
+
+@app.route('/top_artists')
+def top_artists():
+    """Show the user some recommendations."""
+    return render_template('top_artists.html', top=top_artists_source())
+
+
+def top_artists_source():
+    """Return list of top 25 artists in db by pitchfork review."""
+    conn = connect_to_db()
+    cur = conn.cursor()
+
+    cur.execute('SELECT s_id FROM artists WHERE review IS NOT NULL ORDER BY review DESC LIMIT 25;')
+
+    rows = cur.fetchall()
+    return [sp.artist(row[0]) for row in rows]
 
 
 @app.route('/artist/<s_id>')
@@ -146,7 +163,7 @@ def artist(s_id):
     albums = album_discovery.get_artist_albums(artist, full_album_info=True)
     conn = connect_to_db()
     cur = conn.cursor()
-    cur.execute('SELECT review, lastupdated FROM artists WHERE s_id=%s;', (artist['id'],))
+    cur.execute('SELECT review, lastupdated, id FROM artists WHERE s_id=%s;', (artist['id'],))
     rating_row = cur.fetchone()
     cur.close()
     conn.close()
@@ -174,7 +191,15 @@ def artist(s_id):
     if 'id' in session:
         user_rating = get_user_rating(session['id'], s_id)
 
-    return render_template("artist.html", artist=artist, albums=albums, rating=rating, lastupdated=lastupdated, s_id=s_id, user_rating=user_rating)
+    avg_user_rating = '-'
+    user_count = '0'
+    if rating_row is not None:
+        avg_user_rating, user_count = get_avg_user_rating(rating_row[2])
+
+    return render_template("artist.html", artist=artist, albums=albums,
+                           rating=rating, lastupdated=lastupdated, s_id=s_id,
+                           user_rating=user_rating, avg_user_rating=avg_user_rating,
+                           user_count=user_count)
 
 
 def get_user_rating(user_id, artist_id):
@@ -193,7 +218,26 @@ def get_user_rating(user_id, artist_id):
     row = cur.fetchone()
     if not row:
         return None
+    cur.close()
+    conn.close()
     return row[0]
+
+
+def get_avg_user_rating(artist_id):
+    """Get the average rating for an artist for all users that have rated that artist."""
+    conn = connect_to_db()
+    cur = conn.cursor()
+    cur.execute('SELECT COUNT(rating) FROM reviews WHERE a_id=%s', [artist_id])
+    count = int(cur.fetchone()[0])
+    if count:
+        cur.execute('SELECT AVG(rating) FROM reviews WHERE a_id=%s', [artist_id])
+        rating = cur.fetchone()[0]
+    else:
+        rating = '-'
+    cur.close()
+    conn.close()
+
+    return rating, count
 
 
 @app.route('/new_artist', methods=['GET', 'POST'])
@@ -253,6 +297,8 @@ def handledata():
 @app.route('/artist/rate/<s_id>', methods=['GET', 'POST'])
 def rate_artist(s_id):
     """Submit a rating for the artist."""
+    if 'id' not in session:
+        return jsonify(success=False), 400
     rating = request.form['rating']
 
     conn = connect_to_db()
@@ -277,8 +323,8 @@ def rate_artist(s_id):
 
 def connect_to_db():
     """Create a connection to the DB."""
-    if running_local:
-        conn = psycopg2.connect(DATABASE_URL)
-    else:
+    if ON_HEROKU:
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    else:
+        conn = psycopg2.connect(DATABASE_URL)
     return conn

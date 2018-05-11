@@ -38,8 +38,6 @@ Surprise (for recommender system)
 
 Pandas
 
-
-
 Installation
 ------------
 Clone the repo and install the packages in requirements.txt
@@ -52,12 +50,18 @@ After installing, make sure to download the necessary nltk files with the follow
 >> nltk.download('vader_lexicon')
 ```
 
-To run the website locally:
+Setup for running locally
+-------------------------
+To run the website locally you first need to sign up for a spotify API key [here](https://beta.developer.spotify.com/). You also need to import the postgres database from the "db" folder using the information [here](https://www.a2hosting.com/kb/developer-corner/postgresql/import-and-export-a-postgresql-database). Assuming your main postgres user is "postgres" with no password, the following is the code to run the website locally.
+
 ```shell
 $ git submodule init
 $ git submodule update
 $ export FLASK_APP=project.py
 $ export FLASK_DEBUG=1
+$ export SPOTIFY_CLIENT_ID=<client id from API>
+$ export SPOTIFY_CLIENT_SECRET=<client secret from API>
+$ export DATABASE_URL=postgres://postgres@localhost/<dbname>
 $ flask run
 ```
 
@@ -68,6 +72,12 @@ Database Import/export
 
 https://www.a2hosting.com/kb/developer-corner/postgresql/import-and-export-a-postgresql-database
 ```
+
+
+Using the components
+--------------------
+To use the components for creating an artist review rating you can do the following.
+
 ```python
 >> from album_discovery import *
 >> from artist_rating import *
@@ -128,4 +138,17 @@ malibu
 venice
 Couldn't find venice
 7.745075112443779
+```
+
+It's infeasible to use the recommender unless you have the database set up properly and it actually has some data in it. Once you do, we have included the code to get recommendations below.
+
+```python
+>>> import recommender
+>>> rec = recommender.Recommender()
+Computing the cosine similarity matrix...
+Done computing similarity matrix.
+# There's a lot more debugging output after this
+>>> rec.recommend(7) # it's as simple as calling the recommend function with an argument of user id
+# This returns a list of recommended artists
+['16yUpGkBRgc2eDMd3bB3Uw', '2h93pZq0e7k5yf4dywlkpM', '14x0FyR1UMUO1Sc8V5TzN6', '3koiLjNrgRTNbOwViDipeA', '329iU5aUf9pGiYFbjE9xqQ', '1U1el3k54VvEUzo3ybLPlM']
 ```
