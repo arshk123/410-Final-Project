@@ -171,7 +171,7 @@ Computing the cosine similarity matrix...
 Done computing similarity matrix.
 # There's a lot more debugging output after this
 >>> rec.recommend(7) # it's as simple as calling the recommend function with an argument of user id
-# This returns a list of recommended artists and a boolean
+# This returns a list of spotify ids for recommended artists and a boolean
 # If the boolean is true, this is a set of recommended artists tailored personally to the user
 # If it is false, this function is simply returning a list of the top 6 artists in the database
 ['16yUpGkBRgc2eDMd3bB3Uw', '2h93pZq0e7k5yf4dywlkpM', '14x0FyR1UMUO1Sc8V5TzN6', '3koiLjNrgRTNbOwViDipeA', '329iU5aUf9pGiYFbjE9xqQ', '1U1el3k54VvEUzo3ybLPlM'], True
