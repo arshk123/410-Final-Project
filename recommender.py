@@ -93,7 +93,7 @@ class Recommender:
         cur = conn.cursor()
         ret = []
         for d in data:
-            print(d)
+            # print(d)
             cur.execute('SELECT s_id from artists where id=%s', [d])
             s_id = cur.fetchone()
             s_id = s_id[0]
@@ -135,7 +135,7 @@ class Recommender:
         test = train.build_anti_testset()
         predictions = self.knn.test(test)
         top_predictions = self.top3(predictions)
-        print(top_predictions)
+        # print(top_predictions)
         self.pushAllToDB(top_predictions)
         # We should be able to use this now? yes
 
@@ -150,7 +150,7 @@ class Recommender:
                 if d[1] >= 5.5:
                     recommendations.append(d[0])
             if recommendations != []:
-                print(recommendations)
+                # print(recommendations)
                 recommendations = self.get_s_ids(recommendations)
                 dic = {'recommendations': recommendations}
                 vals = (key, json.dumps(dic), "False", json.dumps(dic))
