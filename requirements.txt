@@ -21,7 +21,7 @@ six==1.11.0
 spotipy==2.4.4
 twython==3.6.0
 Unidecode==1.0.22
-urllib3==1.22
+urllib3==1.26.5
 Werkzeug==0.14.1
 numpy>=1.11.2
 surprise==0.1
